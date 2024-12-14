@@ -1,16 +1,13 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-
-package com.mycompany.negocio_reserva;
+package interfacesFachada;
 
 /**
  *
  * @author Sebastian Murrieta Verduzco - 233463
  */
-public class Negocio_Reserva {
-
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
-    }
+public interface IRestauranteFCD {
+    
 }
