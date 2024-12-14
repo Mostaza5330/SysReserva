@@ -30,7 +30,7 @@ public class Conexion {
             throws ConexionException{
         if (entityManagerFactory == null) {
             entityManagerFactory = Persistence.
-                    createEntityManagerFactory("com.mycompany_Reservas_Dominio_jar_1.0-SNAPSHOTPU");
+                    createEntityManagerFactory("Persistencia");
         }
         return entityManagerFactory;
     }

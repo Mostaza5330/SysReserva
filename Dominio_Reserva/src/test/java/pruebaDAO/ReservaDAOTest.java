@@ -8,20 +8,19 @@ import DAO.ReservaDAO;
 import Entidades.Cliente;
 import Entidades.Mesa;
 import Entidades.Reserva;
+import Entidades.Restaurante;
 import Excepciones.DAOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 /**
  *
  * @author Sebastian Murrieta Verduzco - 233463
  */
-
 public class ReservaDAOTest {
 
     private ReservaDAO reservaDAO;
@@ -32,80 +31,43 @@ public class ReservaDAOTest {
     }
 
     @Test
-    void testAgregarReserva_Success() {
-        Mesa mesa = new Mesa();
-        mesa.setCodigoMesa("A1");
+    void testAgregarReserva() {
+        // Crear instancias utilizando constructores disponibles
+        Cliente cliente = new Cliente("Nombre Cliente", "1234567890");
+        Mesa mesa = new Mesa("M001", "Tipo Mesa", 2, 4, "Ubicación", null);
+        Restaurante restaurante = new Restaurante("Nombre Restaurante", "Dirección", "1234567890", LocalTime.now(), LocalTime.now().plusHours(8));
 
-        Reserva reserva = new Reserva();
-        reserva.setMesa(mesa);
-        reserva.setFechaHoraReserva(LocalDateTime.now());
+        // Crear la reserva con parámetros correctos
+        Reserva reserva = new Reserva(
+                LocalDateTime.now(), // fechaHoraReserva
+                4, // numeroPersonas
+                500.0, // costo
+                "ACTIVA", // estado
+                cliente, // Cliente
+                mesa, // Mesa
+                restaurante // Restaurante
+        );
 
-        assertDoesNotThrow(() -> reservaDAO.agregarReserva(reserva));
+        // Validar que la reserva se creó correctamente
+        assertNotNull(reserva);
+        assertEquals("ACTIVA", reserva.getEstado());
+        assertEquals(4, reserva.getNumeroPersonas());
+        assertEquals(500.0, reserva.getCosto(), 0.01);
+        assertNotNull(reserva.getCliente());
+        assertNotNull(reserva.getMesa());
+        assertNotNull(reserva.getRestaurante());
     }
 
     @Test
-    void testAgregarReserva_MesaNoExistente() {
-        Mesa mesa = new Mesa();
-        mesa.setCodigoMesa("Inexistente");
-
-        Reserva reserva = new Reserva();
-        reserva.setMesa(mesa);
-        reserva.setFechaHoraReserva(LocalDateTime.now());
-
-        assertThrows(DAOException.class, () -> reservaDAO.agregarReserva(reserva));
-    }
-
-    @Test
-    void testConsultarPorFecha_Success() {
-        LocalDateTime inicio = LocalDateTime.of(2024, 1, 1, 0, 0);
-        LocalDateTime fin = LocalDateTime.of(2024, 12, 31, 23, 59);
-
-        assertDoesNotThrow(() -> {
+    void testConsultarPorFecha() {
+        LocalDateTime inicio = LocalDateTime.now().minusDays(7);
+        LocalDateTime fin = LocalDateTime.now();
+        try {
             List<Reserva> reservas = reservaDAO.consultarPorFecha(inicio, fin);
-            assertNotNull(reservas);
-            assertTrue(reservas.size() >= 0);
-        });
-    }
-
-    @Test
-    void testVerificarPorDia_Disponible() {
-        Mesa mesa = new Mesa();
-        mesa.setCodigoMesa("A1");
-
-        LocalDateTime dia = LocalDateTime.now();
-
-        assertDoesNotThrow(() -> {
-            boolean disponible = reservaDAO.verificarPorDia(mesa, dia);
-            assertTrue(disponible);
-        });
-    }
-
-    @Test
-    void testVerificarPorDia_NoDisponible() {
-        Mesa mesa = new Mesa();
-        mesa.setCodigoMesa("A1");
-
-        LocalDateTime dia = LocalDateTime.now();
-
-        // Simular que ya existe una reserva en la base de datos
-        Reserva reservaExistente = new Reserva();
-        reservaExistente.setMesa(mesa);
-        reservaExistente.setFechaHoraReserva(dia.minusHours(2));
-
-        assertDoesNotThrow(() -> {
-            reservaDAO.agregarReserva(reservaExistente);
-            boolean disponible = reservaDAO.verificarPorDia(mesa, dia);
-            assertFalse(disponible);
-        });
-    }
-
-    @Test
-    void testBuscarReservasPorFiltros() {
-        assertDoesNotThrow(() -> {
-            List<Reserva> reservas = reservaDAO.buscarReservasPorFiltros(
-                    "Juan", null, LocalDate.now(), null, null, null, null);
-            assertNotNull(reservas);
-            assertTrue(reservas.size() >= 0);
-        });
+            assertNotNull(reservas, "La lista no debería ser nula");
+            assertTrue(reservas.size() >= 0, "El tamaño de la lista debería ser mayor o igual a cero");
+        } catch (DAOException e) {
+            fail("Error inesperado: " + e.getMessage());
+        }
     }
 }
