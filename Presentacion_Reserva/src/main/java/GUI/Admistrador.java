@@ -1,5 +1,16 @@
 package GUI;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 /**
  * Clase que representa la interfaz gráfica del administrador del restaurante.
  * Extiende de JFrame y proporciona opciones para la gestión de reservas,
@@ -36,7 +47,7 @@ public class Admistrador extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         reservacionPn = new Control.PanelRound();
         jLabel2 = new javax.swing.JLabel();
-        reportePn = new Control.PanelRound();
+        insercionPn = new Control.PanelRound();
         jLabel3 = new javax.swing.JLabel();
         consultasPn = new Control.PanelRound();
         jLabel4 = new javax.swing.JLabel();
@@ -48,7 +59,7 @@ public class Admistrador extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         panelRound2 = new Control.PanelRound();
         jLabel9 = new javax.swing.JLabel();
-        reportePn1 = new Control.PanelRound();
+        reportePn = new Control.PanelRound();
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -123,16 +134,16 @@ public class Admistrador extends javax.swing.JFrame {
 
         jPanel1.add(reservacionPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 370, 320, 90));
 
-        reportePn.setBackground(new java.awt.Color(201, 60, 32));
-        reportePn.setCursorHandEnabled(true);
-        reportePn.setPreferredSize(new java.awt.Dimension(320, 90));
-        reportePn.setRoundBottomLeft(50);
-        reportePn.setRoundBottomRight(50);
-        reportePn.setRoundTopLeft(50);
-        reportePn.setRoundTopRight(50);
-        reportePn.addMouseListener(new java.awt.event.MouseAdapter() {
+        insercionPn.setBackground(new java.awt.Color(201, 60, 32));
+        insercionPn.setCursorHandEnabled(true);
+        insercionPn.setPreferredSize(new java.awt.Dimension(320, 90));
+        insercionPn.setRoundBottomLeft(50);
+        insercionPn.setRoundBottomRight(50);
+        insercionPn.setRoundTopLeft(50);
+        insercionPn.setRoundTopRight(50);
+        insercionPn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                reportePnMouseClicked(evt);
+                insercionPnMouseClicked(evt);
             }
         });
 
@@ -141,24 +152,24 @@ public class Admistrador extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Inserción Masiva");
 
-        javax.swing.GroupLayout reportePnLayout = new javax.swing.GroupLayout(reportePn);
-        reportePn.setLayout(reportePnLayout);
-        reportePnLayout.setHorizontalGroup(
-            reportePnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(reportePnLayout.createSequentialGroup()
+        javax.swing.GroupLayout insercionPnLayout = new javax.swing.GroupLayout(insercionPn);
+        insercionPn.setLayout(insercionPnLayout);
+        insercionPnLayout.setHorizontalGroup(
+            insercionPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(insercionPnLayout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(jLabel3)
                 .addContainerGap(26, Short.MAX_VALUE))
         );
-        reportePnLayout.setVerticalGroup(
-            reportePnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePnLayout.createSequentialGroup()
+        insercionPnLayout.setVerticalGroup(
+            insercionPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, insercionPnLayout.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
         );
 
-        jPanel1.add(reportePn, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 260, -1, -1));
+        jPanel1.add(insercionPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 260, -1, -1));
 
         consultasPn.setBackground(new java.awt.Color(201, 60, 32));
         consultasPn.setCursorHandEnabled(true);
@@ -342,42 +353,42 @@ public class Admistrador extends javax.swing.JFrame {
 
         jPanel1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 20, 100, 100));
 
-        reportePn1.setBackground(new java.awt.Color(201, 60, 32));
-        reportePn1.setCursorHandEnabled(true);
-        reportePn1.setPreferredSize(new java.awt.Dimension(320, 90));
-        reportePn1.setRoundBottomLeft(50);
-        reportePn1.setRoundBottomRight(50);
-        reportePn1.setRoundTopLeft(50);
-        reportePn1.setRoundTopRight(50);
-        reportePn1.addMouseListener(new java.awt.event.MouseAdapter() {
+        reportePn.setBackground(new java.awt.Color(201, 60, 32));
+        reportePn.setCursorHandEnabled(true);
+        reportePn.setPreferredSize(new java.awt.Dimension(320, 90));
+        reportePn.setRoundBottomLeft(50);
+        reportePn.setRoundBottomRight(50);
+        reportePn.setRoundTopLeft(50);
+        reportePn.setRoundTopRight(50);
+        reportePn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                reportePn1MouseClicked(evt);
+                reportePnMouseClicked(evt);
             }
         });
 
         jLabel8.setBackground(new java.awt.Color(255, 255, 255));
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Reporte");
+        jLabel8.setText("Reportes");
 
-        javax.swing.GroupLayout reportePn1Layout = new javax.swing.GroupLayout(reportePn1);
-        reportePn1.setLayout(reportePn1Layout);
-        reportePn1Layout.setHorizontalGroup(
-            reportePn1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePn1Layout.createSequentialGroup()
-                .addContainerGap(99, Short.MAX_VALUE)
+        javax.swing.GroupLayout reportePnLayout = new javax.swing.GroupLayout(reportePn);
+        reportePn.setLayout(reportePnLayout);
+        reportePnLayout.setHorizontalGroup(
+            reportePnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePnLayout.createSequentialGroup()
+                .addContainerGap(84, Short.MAX_VALUE)
                 .addComponent(jLabel8)
                 .addGap(94, 94, 94))
         );
-        reportePn1Layout.setVerticalGroup(
-            reportePn1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePn1Layout.createSequentialGroup()
+        reportePnLayout.setVerticalGroup(
+            reportePnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePnLayout.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
         );
 
-        jPanel1.add(reportePn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, -1, 90));
+        jPanel1.add(reportePn, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, -1, 90));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
 
@@ -413,10 +424,9 @@ public class Admistrador extends javax.swing.JFrame {
      *
      * @param evt el evento del mouse que activó este método
      */
-    private void reportePnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportePnMouseClicked
-        new Reportes().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_reportePnMouseClicked
+    private void insercionPnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_insercionPnMouseClicked
+
+    }//GEN-LAST:event_insercionPnMouseClicked
 
     /**
      * Maneja el evento de clic del mouse en el panel de cancelar reserva. Este
@@ -456,9 +466,65 @@ public class Admistrador extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_panelRound2MouseClicked
 
-    private void reportePn1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportePn1MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_reportePn1MouseClicked
+    private void reportePnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportePnMouseClicked
+        // Crear un panel para el mensaje personalizado
+        JPanel panel = new JPanel();
+        panel.setBackground(new java.awt.Color(12, 11, 29)); // Fondo del panel
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Layout para organizar verticalmente
+        JLabel mensaje = new JLabel("Seleccione una opción:");
+        mensaje.setForeground(Color.WHITE); // Texto en blanco
+        mensaje.setAlignmentX(JLabel.CENTER_ALIGNMENT); // Centrar el texto
+        panel.add(mensaje);
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Espaciado interno
+
+        // Crear los botones personalizados
+        JButton botonReporte = new JButton("Reporte del Restaurante");
+        botonReporte.setBackground(new java.awt.Color(201, 60, 32)); // Color del botón
+        botonReporte.setForeground(Color.WHITE); // Color del texto
+        botonReporte.setFocusPainted(false); // Sin borde de foco
+        botonReporte.setAlignmentX(JButton.CENTER_ALIGNMENT); // Centrar botón
+        botonReporte.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Cursor de mano
+
+        JButton botonHistorial = new JButton("Historial de Clientes");
+        botonHistorial.setBackground(new java.awt.Color(201, 60, 32)); // Color del botón
+        botonHistorial.setForeground(Color.WHITE); // Color del texto
+        botonHistorial.setFocusPainted(false); // Sin borde de foco
+        botonHistorial.setAlignmentX(JButton.CENTER_ALIGNMENT); // Centrar botón
+        botonHistorial.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Cursor de mano
+
+        // Crear un cuadro de diálogo personalizado
+        JDialog dialogo = new JDialog();
+        dialogo.setTitle("Seleccionar tipo de reporte");
+        dialogo.setModal(true);
+        dialogo.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        // Agregar los botones al panel principal
+        panel.add(Box.createVerticalStrut(10)); // Espaciado entre mensaje y botones
+        panel.add(botonReporte);
+        panel.add(Box.createVerticalStrut(10)); // Espaciado entre botones
+        panel.add(botonHistorial);
+
+        // Configurar el diálogo
+        dialogo.setContentPane(panel);
+        dialogo.pack();
+        dialogo.setLocationRelativeTo(null);
+
+        // Añadir acciones a los botones
+        botonReporte.addActionListener(e -> {
+            new Reportes().setVisible(true);
+            dialogo.dispose();
+            dispose();
+        });
+
+        botonHistorial.addActionListener(e -> {
+            new HistorialCliente().setVisible(true);
+            dialogo.dispose();
+            dispose();
+        });
+
+        // Mostrar el cuadro de diálogo
+        dialogo.setVisible(true);
+    }//GEN-LAST:event_reportePnMouseClicked
 
     /**
      * El método principal que sirve como punto de entrada para la aplicación.
@@ -504,6 +570,7 @@ public class Admistrador extends javax.swing.JFrame {
     private Control.PanelRound agregarMesaPn;
     private Control.PanelRound cancelarReserva;
     private Control.PanelRound consultasPn;
+    private Control.PanelRound insercionPn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -517,7 +584,6 @@ public class Admistrador extends javax.swing.JFrame {
     private Control.PanelRound panelRound1;
     private Control.PanelRound panelRound2;
     private Control.PanelRound reportePn;
-    private Control.PanelRound reportePn1;
     private Control.PanelRound reservacionPn;
     private Control.PanelRound salirPn;
     // End of variables declaration//GEN-END:variables

@@ -106,6 +106,7 @@ public class FiltrosFCD implements IFiltrosFCD {
                 .filter(reserva -> cumpleCriteriosFiltro(reserva, nombreCliente, telefono, fecha))
                 .collect(Collectors.toList());
     }
+ 
 
     /**
      * Verifica si una reserva cumple con los criterios de filtrado

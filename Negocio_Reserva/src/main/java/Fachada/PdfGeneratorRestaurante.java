@@ -17,7 +17,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 
 /**
- * La clase {@code PdfGenerator} se encarga de generar un documento PDF que
+ * La clase {@code PdfGeneratorRestaurante} se encarga de generar un documento PDF que
  * contiene un reporte de reservas basado en filtros proporcionados por el
  * usuario. Utiliza la biblioteca iText para la creación del PDF.
  *
@@ -27,7 +27,7 @@ import javax.swing.JFileChooser;
  *
  * @author Sebastian Murrieta Verduzco - 233463
  */
-public class PdfGenerator {
+public class PdfGeneratorRestaurante {
 
     /**
      * Genera un documento PDF desde un formulario con filtros específicos de

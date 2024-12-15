@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Interfaz para filtrar reservas.
- * Define los métodos que deben implementarse para realizar el filtrado de reservas.
- * 
+ * Interfaz para filtrar reservas. Define los métodos que deben implementarse
+ * para realizar el filtrado de reservas.
+ *
  * @author Sebastian Murrieta Verduzco - 233463
  */
 public interface IFiltrosFCD {
@@ -23,8 +23,10 @@ public interface IFiltrosFCD {
      */
     List<ReservaDTO> filtrarReservas(String nombreCliente, String telefono, Date fecha);
 
+    
     /**
-     * Filtra las reservas según los criterios de tipo de mesa, ubicación y rango de fechas.
+     * Filtra las reservas según los criterios de tipo de mesa, ubicación y
+     * rango de fechas.
      *
      * @param tipoMesa Tipo de mesa a filtrar (puede ser null o vacío)
      * @param ubicacion Ubicación a filtrar (puede ser null o vacío)
@@ -37,7 +39,8 @@ public interface IFiltrosFCD {
     /**
      * Refresca la lista de reservas desde la base de datos.
      *
-     * @throws Excepciones.BOException si ocurre un error al recargar las reservas
+     * @throws Excepciones.BOException si ocurre un error al recargar las
+     * reservas
      */
     void refrescarReservas() throws Excepciones.BOException;
 }
