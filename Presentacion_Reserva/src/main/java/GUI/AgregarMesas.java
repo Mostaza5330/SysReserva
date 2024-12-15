@@ -113,11 +113,11 @@ public class AgregarMesas extends javax.swing.JFrame {
         jLabel3.setText("Ubicacion:");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 370, -1, -1));
 
-        txfNumMesas.setBackground(new java.awt.Color(102, 102, 102));
+        txfNumMesas.setBackground(new java.awt.Color(201, 60, 32));
         txfNumMesas.setForeground(new java.awt.Color(255, 255, 255));
         getContentPane().add(txfNumMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 230, 270, 40));
 
-        agregarBtn.setBackground(new java.awt.Color(102, 102, 102));
+        agregarBtn.setBackground(new java.awt.Color(201, 60, 32));
         agregarBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         agregarBtn.setForeground(new java.awt.Color(255, 255, 255));
         agregarBtn.setText("Agregar");
@@ -128,6 +128,7 @@ public class AgregarMesas extends javax.swing.JFrame {
         });
         getContentPane().add(agregarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 480, 140, 50));
 
+        cbxTamaño.setBackground(new java.awt.Color(201, 60, 32));
         cbxTamaño.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PEQUEÑA", "MEDIANA", "GRANDE" }));
         getContentPane().add(cbxTamaño, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 300, 270, 40));
 
@@ -140,6 +141,7 @@ public class AgregarMesas extends javax.swing.JFrame {
         jLabel4.setText("Tamaño de mesa:");
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 300, -1, -1));
 
+        cbxUbicacion.setBackground(new java.awt.Color(201, 60, 32));
         cbxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TERRAZA", "VENTANA", "GENERAL" }));
         getContentPane().add(cbxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 370, 270, 40));
 
@@ -149,7 +151,7 @@ public class AgregarMesas extends javax.swing.JFrame {
         jLabel11.setText("Numero de mesas:");
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, -1, -1));
 
-        jPanel1.setBackground(new java.awt.Color(22, 22, 22));
+        jPanel1.setBackground(new java.awt.Color(12, 11, 29));
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 20)); // NOI18N
@@ -157,7 +159,7 @@ public class AgregarMesas extends javax.swing.JFrame {
         jLabel12.setText("Numero de mesas por ubicacion");
 
         txfTerraza.setEditable(false);
-        txfTerraza.setBackground(new java.awt.Color(102, 102, 102));
+        txfTerraza.setBackground(new java.awt.Color(201, 60, 32));
         txfTerraza.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel13.setBackground(new java.awt.Color(255, 255, 255));
@@ -166,7 +168,7 @@ public class AgregarMesas extends javax.swing.JFrame {
         jLabel13.setText("Terraza:");
 
         txfVentana.setEditable(false);
-        txfVentana.setBackground(new java.awt.Color(102, 102, 102));
+        txfVentana.setBackground(new java.awt.Color(201, 60, 32));
         txfVentana.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel14.setBackground(new java.awt.Color(255, 255, 255));
@@ -180,10 +182,10 @@ public class AgregarMesas extends javax.swing.JFrame {
         jLabel10.setText("General:");
 
         txfGeneral.setEditable(false);
-        txfGeneral.setBackground(new java.awt.Color(102, 102, 102));
+        txfGeneral.setBackground(new java.awt.Color(201, 60, 32));
         txfGeneral.setForeground(new java.awt.Color(255, 255, 255));
 
-        regresarBtn.setBackground(new java.awt.Color(102, 102, 102));
+        regresarBtn.setBackground(new java.awt.Color(201, 60, 32));
         regresarBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         regresarBtn.setForeground(new java.awt.Color(255, 255, 255));
         regresarBtn.setText("Regresar");
@@ -193,7 +195,7 @@ public class AgregarMesas extends javax.swing.JFrame {
             }
         });
 
-        tituloPn.setBackground(new java.awt.Color(51, 51, 51));
+        tituloPn.setBackground(new java.awt.Color(201, 60, 32));
         tituloPn.setCursorHandEnabled(true);
         tituloPn.setMinimumSize(new java.awt.Dimension(320, 90));
         tituloPn.setRoundBottomLeft(50);

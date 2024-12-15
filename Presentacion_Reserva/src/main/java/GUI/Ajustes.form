@@ -48,7 +48,7 @@
     <Component class="javax.swing.JButton" name="regresarBtn">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="66" green="66" red="66" type="rgb"/>
+          <Color blue="20" green="3c" red="c9" type="rgb"/>
         </Property>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="24" style="0"/>
@@ -70,7 +70,7 @@
     <Component class="javax.swing.JButton" name="establecerHorarioBtn">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="66" green="66" red="66" type="rgb"/>
+          <Color blue="20" green="3c" red="c9" type="rgb"/>
         </Property>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="24" style="0"/>
@@ -130,7 +130,7 @@
     <Container class="javax.swing.JPanel" name="jPanel1">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="16" green="16" red="16" type="rgb"/>
+          <Color blue="1d" green="b" red="c" type="rgb"/>
         </Property>
       </Properties>
       <Constraints>
@@ -168,13 +168,13 @@
         <Component class="raven.datetime.component.time.TimePicker" name="horaCierreTimePicker">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="1c" green="1c" red="1c" type="rgb"/>
+              <Color blue="33" green="1e" red="1d" type="rgb"/>
             </Property>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="color" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="40" green="40" id="darkGray" palette="1" red="40" type="palette"/>
+              <Color blue="20" green="3c" red="c9" type="rgb"/>
             </Property>
             <Property name="focusCycleRoot" type="boolean" value="true"/>
           </Properties>
@@ -182,13 +182,13 @@
         <Component class="raven.datetime.component.time.TimePicker" name="horaInicioTimePicker">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="1c" green="1c" red="1c" type="rgb"/>
+              <Color blue="33" green="1e" red="1d" type="rgb"/>
             </Property>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="color" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="40" green="40" id="darkGray" palette="1" red="40" type="palette"/>
+              <Color blue="20" green="3c" red="c9" type="rgb"/>
             </Property>
           </Properties>
         </Component>

@@ -51,7 +51,7 @@ public class Ajustes extends javax.swing.JFrame {
         jLabel9.setText("Horario restaurante");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 140, -1, -1));
 
-        regresarBtn.setBackground(new java.awt.Color(102, 102, 102));
+        regresarBtn.setBackground(new java.awt.Color(201, 60, 32));
         regresarBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         regresarBtn.setForeground(new java.awt.Color(255, 255, 255));
         regresarBtn.setText("Regresar");
@@ -62,7 +62,7 @@ public class Ajustes extends javax.swing.JFrame {
         });
         getContentPane().add(regresarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 540, 150, 50));
 
-        establecerHorarioBtn.setBackground(new java.awt.Color(102, 102, 102));
+        establecerHorarioBtn.setBackground(new java.awt.Color(201, 60, 32));
         establecerHorarioBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         establecerHorarioBtn.setForeground(new java.awt.Color(255, 255, 255));
         establecerHorarioBtn.setText("Establecer");
@@ -85,16 +85,16 @@ public class Ajustes extends javax.swing.JFrame {
         jLabel11.setText("Horario de cierre");
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 200, -1, -1));
 
-        jPanel1.setBackground(new java.awt.Color(22, 22, 22));
+        jPanel1.setBackground(new java.awt.Color(12, 11, 29));
 
-        horaCierreTimePicker.setBackground(new java.awt.Color(28, 28, 28));
+        horaCierreTimePicker.setBackground(new java.awt.Color(29, 30, 51));
         horaCierreTimePicker.setForeground(new java.awt.Color(255, 255, 255));
-        horaCierreTimePicker.setColor(java.awt.Color.darkGray);
+        horaCierreTimePicker.setColor(new java.awt.Color(201, 60, 32));
         horaCierreTimePicker.setFocusCycleRoot(true);
 
-        horaInicioTimePicker.setBackground(new java.awt.Color(28, 28, 28));
+        horaInicioTimePicker.setBackground(new java.awt.Color(29, 30, 51));
         horaInicioTimePicker.setForeground(new java.awt.Color(255, 255, 255));
-        horaInicioTimePicker.setColor(java.awt.Color.darkGray);
+        horaInicioTimePicker.setColor(new java.awt.Color(201, 60, 32));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

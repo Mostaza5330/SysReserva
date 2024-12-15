@@ -10,7 +10,7 @@ package GUI;
  * crear un diseño atractivo y funcional. Incluye paneles que permiten al
  * administrador interactuar con diferentes secciones de la aplicación. </p>
  *
- * @author Sebastian Murrieta Verduzco - 233463
+ * @author Sebastian Murrieta
  */
 public class Admistrador extends javax.swing.JFrame {
 
@@ -48,11 +48,13 @@ public class Admistrador extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         panelRound2 = new Control.PanelRound();
         jLabel9 = new javax.swing.JLabel();
+        reportePn1 = new Control.PanelRound();
+        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        panelRound1.setBackground(new java.awt.Color(51, 51, 51));
+        panelRound1.setBackground(new java.awt.Color(201, 60, 32));
         panelRound1.setRoundBottomLeft(50);
         panelRound1.setRoundBottomRight(50);
         panelRound1.setRoundTopLeft(50);
@@ -82,10 +84,10 @@ public class Admistrador extends javax.swing.JFrame {
 
         getContentPane().add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(248, 82, 760, -1));
 
-        jPanel1.setBackground(new java.awt.Color(29, 29, 29));
+        jPanel1.setBackground(new java.awt.Color(12, 11, 29));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        reservacionPn.setBackground(new java.awt.Color(51, 51, 51));
+        reservacionPn.setBackground(new java.awt.Color(201, 60, 32));
         reservacionPn.setCursorHandEnabled(true);
         reservacionPn.setRoundBottomLeft(50);
         reservacionPn.setRoundBottomRight(50);
@@ -121,7 +123,7 @@ public class Admistrador extends javax.swing.JFrame {
 
         jPanel1.add(reservacionPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 370, 320, 90));
 
-        reportePn.setBackground(new java.awt.Color(51, 51, 51));
+        reportePn.setBackground(new java.awt.Color(201, 60, 32));
         reportePn.setCursorHandEnabled(true);
         reportePn.setPreferredSize(new java.awt.Dimension(320, 90));
         reportePn.setRoundBottomLeft(50);
@@ -137,16 +139,16 @@ public class Admistrador extends javax.swing.JFrame {
         jLabel3.setBackground(new java.awt.Color(255, 255, 255));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Reporte");
+        jLabel3.setText("Inserción Masiva");
 
         javax.swing.GroupLayout reportePnLayout = new javax.swing.GroupLayout(reportePn);
         reportePn.setLayout(reportePnLayout);
         reportePnLayout.setHorizontalGroup(
             reportePnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePnLayout.createSequentialGroup()
-                .addContainerGap(99, Short.MAX_VALUE)
+            .addGroup(reportePnLayout.createSequentialGroup()
+                .addGap(31, 31, 31)
                 .addComponent(jLabel3)
-                .addGap(94, 94, 94))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         reportePnLayout.setVerticalGroup(
             reportePnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,9 +158,9 @@ public class Admistrador extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
         );
 
-        jPanel1.add(reportePn, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, -1, -1));
+        jPanel1.add(reportePn, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 260, -1, -1));
 
-        consultasPn.setBackground(new java.awt.Color(51, 51, 51));
+        consultasPn.setBackground(new java.awt.Color(201, 60, 32));
         consultasPn.setCursorHandEnabled(true);
         consultasPn.setPreferredSize(new java.awt.Dimension(320, 90));
         consultasPn.setRoundBottomLeft(50);
@@ -195,7 +197,7 @@ public class Admistrador extends javax.swing.JFrame {
 
         jPanel1.add(consultasPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 480, -1, -1));
 
-        cancelarReserva.setBackground(new java.awt.Color(51, 51, 51));
+        cancelarReserva.setBackground(new java.awt.Color(201, 60, 32));
         cancelarReserva.setCursorHandEnabled(true);
         cancelarReserva.setPreferredSize(new java.awt.Dimension(320, 90));
         cancelarReserva.setRoundBottomLeft(50);
@@ -232,7 +234,7 @@ public class Admistrador extends javax.swing.JFrame {
 
         jPanel1.add(cancelarReserva, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 470, -1, -1));
 
-        agregarMesaPn.setBackground(new java.awt.Color(51, 51, 51));
+        agregarMesaPn.setBackground(new java.awt.Color(201, 60, 32));
         agregarMesaPn.setCursorHandEnabled(true);
         agregarMesaPn.setMinimumSize(new java.awt.Dimension(320, 90));
         agregarMesaPn.setRoundBottomLeft(50);
@@ -255,21 +257,21 @@ public class Admistrador extends javax.swing.JFrame {
         agregarMesaPnLayout.setHorizontalGroup(
             agregarMesaPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, agregarMesaPnLayout.createSequentialGroup()
-                .addContainerGap(88, Short.MAX_VALUE)
+                .addContainerGap(44, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(75, 75, 75))
+                .addGap(39, 39, 39))
         );
         agregarMesaPnLayout.setVerticalGroup(
             agregarMesaPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(agregarMesaPnLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(20, 20, 20)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
-        jPanel1.add(agregarMesaPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 250, 400, -1));
+        jPanel1.add(agregarMesaPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 250, 320, -1));
 
-        salirPn.setBackground(new java.awt.Color(51, 51, 51));
+        salirPn.setBackground(new java.awt.Color(201, 60, 32));
         salirPn.setCursorHandEnabled(true);
         salirPn.setPreferredSize(new java.awt.Dimension(320, 90));
         salirPn.setRoundBottomLeft(50);
@@ -306,7 +308,7 @@ public class Admistrador extends javax.swing.JFrame {
 
         jPanel1.add(salirPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 580, 340, -1));
 
-        panelRound2.setBackground(new java.awt.Color(51, 51, 51));
+        panelRound2.setBackground(new java.awt.Color(201, 60, 32));
         panelRound2.setToolTipText("");
         panelRound2.setCursorHandEnabled(true);
         panelRound2.setRoundBottomLeft(100);
@@ -339,6 +341,43 @@ public class Admistrador extends javax.swing.JFrame {
         );
 
         jPanel1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 20, 100, 100));
+
+        reportePn1.setBackground(new java.awt.Color(201, 60, 32));
+        reportePn1.setCursorHandEnabled(true);
+        reportePn1.setPreferredSize(new java.awt.Dimension(320, 90));
+        reportePn1.setRoundBottomLeft(50);
+        reportePn1.setRoundBottomRight(50);
+        reportePn1.setRoundTopLeft(50);
+        reportePn1.setRoundTopRight(50);
+        reportePn1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reportePn1MouseClicked(evt);
+            }
+        });
+
+        jLabel8.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("Reporte");
+
+        javax.swing.GroupLayout reportePn1Layout = new javax.swing.GroupLayout(reportePn1);
+        reportePn1.setLayout(reportePn1Layout);
+        reportePn1Layout.setHorizontalGroup(
+            reportePn1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePn1Layout.createSequentialGroup()
+                .addContainerGap(99, Short.MAX_VALUE)
+                .addComponent(jLabel8)
+                .addGap(94, 94, 94))
+        );
+        reportePn1Layout.setVerticalGroup(
+            reportePn1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportePn1Layout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
+        );
+
+        jPanel1.add(reportePn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
 
@@ -417,6 +456,10 @@ public class Admistrador extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_panelRound2MouseClicked
 
+    private void reportePn1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportePn1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_reportePn1MouseClicked
+
     /**
      * El método principal que sirve como punto de entrada para la aplicación.
      * Establece la apariencia de la aplicación y muestra la ventana principal
@@ -447,6 +490,7 @@ public class Admistrador extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Admistrador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
         /* Crear y mostrar la ventana */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -467,11 +511,13 @@ public class Admistrador extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private Control.PanelRound panelRound1;
     private Control.PanelRound panelRound2;
     private Control.PanelRound reportePn;
+    private Control.PanelRound reportePn1;
     private Control.PanelRound reservacionPn;
     private Control.PanelRound salirPn;
     // End of variables declaration//GEN-END:variables

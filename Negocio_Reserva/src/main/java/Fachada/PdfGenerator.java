@@ -112,7 +112,7 @@ public class PdfGenerator {
 
     private Table crearTablaReservas(List<ReservaDTO> reservas,
             String fechaInicio, String fechaFin, String tipoMesa, String ubicacion) {
-        Table table = new Table(6); // Ahora con 6 columnas
+        Table table = new Table(5); // Ahora con 6 columnas
         table.addHeaderCell(createCenteredCell("Cliente"));
         table.addHeaderCell(createCenteredCell("Fecha"));
         table.addHeaderCell(createCenteredCell("Número de Personas"));

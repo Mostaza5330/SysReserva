@@ -2,8 +2,10 @@ package GUI;
 
 import DTOs.ClienteDTO;
 import DTOs.MesaDTO;
+import DTOs.RestauranteDTO;
 import Excepciones.FacadeException;
 import Fachada.ClienteFCD;
+import Fachada.HorarioRestauranteFCD;
 import Fachada.MesaFCD;
 import Fachada.ReservaFCD;
 import interfacesFachada.IClienteFCD;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
@@ -25,7 +28,7 @@ import javax.swing.table.TableModel;
  * usuarios seleccionar un cliente, una mesa, una fecha y una hora para realizar
  * la reserva. También maneja la carga de datos iniciales y la validación de
  * entrada.
- * 
+ *
  * @author Sebastian Murrieta Verduzco - 233463
  */
 public class Reservaciones extends javax.swing.JFrame {
@@ -46,6 +49,7 @@ public class Reservaciones extends javax.swing.JFrame {
         this.reservaFCD = new ReservaFCD();
 
         cargarDatosIniciales();
+        cargarHorasDisponibles();
     }
 
     /**
@@ -59,6 +63,54 @@ public class Reservaciones extends javax.swing.JFrame {
         } catch (FacadeException fe) {
             JOptionPane.showMessageDialog(this, "Error al cargar los "
                     + "datos de inicio", "Error", JOptionPane.ERROR);
+        }
+    }
+
+    private void cargarHorasDisponibles() {
+        try {
+            // Crear instancia de HorarioRestauranteFCD
+            HorarioRestauranteFCD horarioFCD = new HorarioRestauranteFCD();
+            RestauranteDTO restaurante = new RestauranteDTO();
+
+            // Obtener horarios del restaurante
+            LocalTime horaApertura = restaurante.getHoraApertura();
+            LocalTime horaCierre = restaurante.getHoraCierre();
+
+            // Limpiar el combo box antes de agregar nuevos elementos
+            cbxHoras.removeAllItems();
+
+            // Si no hay horarios establecidos, mostrar mensaje y salir
+            if (horaApertura == null || horaCierre == null) {
+                JOptionPane.showMessageDialog(this,
+                        "No hay horarios establecidos para el restaurante.",
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Formatear las horas para mostrarlas en formato 12 horas
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+            // Agregar horarios en intervalos de 30 minutos
+            LocalTime tiempoActual = horaApertura;
+            while (!tiempoActual.isAfter(horaCierre)) {
+                // Agregar el tiempo actual al combo box
+                cbxHoras.addItem(tiempoActual.format(formatter));
+
+                // Incrementar en 30 minutos
+                tiempoActual = tiempoActual.plusMinutes(30);
+
+                // Si el siguiente intervalo excede la hora de cierre, detener
+                if (tiempoActual.isAfter(horaCierre)) {
+                    break;
+                }
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar los horarios disponibles: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -77,7 +129,7 @@ public class Reservaciones extends javax.swing.JFrame {
                     + "de continuar");
             return false; // Añadido retorno false en caso de no seleccionar mesa
         }
-        
+
         return true;
     }
 
@@ -327,7 +379,7 @@ public class Reservaciones extends javax.swing.JFrame {
 
                 // Guardamos la reserva
                 reservaFCD.agregarReserva(cliente, mesa, fechaHora, numPersonas, costo);
-                
+
             }
         } catch (FacadeException fe) {
             JOptionPane.showMessageDialog(this, fe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
