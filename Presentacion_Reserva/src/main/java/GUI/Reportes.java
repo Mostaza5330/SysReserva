@@ -271,7 +271,7 @@ public class Reportes extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "No.Mesa", "Tamaño de mesa", "Cliente", "Lugar", "Fehca de reservacion"
+                "No.Mesa", "Tamaño de mesa", "Cliente", "Lugar", "Fecha de reservacion"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -283,6 +283,11 @@ public class Reportes extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tblMesas);
+        if (tblMesas.getColumnModel().getColumnCount() > 0) {
+            tblMesas.getColumnModel().getColumn(0).setPreferredWidth(20);
+            tblMesas.getColumnModel().getColumn(1).setPreferredWidth(60);
+            tblMesas.getColumnModel().getColumn(3).setPreferredWidth(29);
+        }
 
         panelGlowingGradient1.add(jScrollPane1);
         jScrollPane1.setBounds(30, 70, 640, 550);

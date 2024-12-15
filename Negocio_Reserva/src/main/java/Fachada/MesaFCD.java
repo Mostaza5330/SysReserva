@@ -120,10 +120,10 @@ public class MesaFCD implements IMesaFCD {
                 capacidadMinima = 1;
                 capacidadMaxima = 2;    
             } else if (tamaño.equalsIgnoreCase("MEDIANA")) {
-                capacidadMinima = 3;
+                capacidadMinima = 2;
                 capacidadMaxima = 4;    
             } else {
-                capacidadMinima = 5;
+                capacidadMinima = 4;
                 capacidadMaxima = 8;    
             }
 

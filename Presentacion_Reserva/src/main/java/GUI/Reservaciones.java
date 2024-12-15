@@ -44,14 +44,15 @@ public class Reservaciones extends javax.swing.JFrame {
      */
     public Reservaciones() {
         initComponents();
-
         this.clienteFCD = new ClienteFCD();
         this.mesaFCD = new MesaFCD();
         this.reservaFCD = new ReservaFCD();
-
+        this.restaurante = new RestauranteDTO(); // Crear un nuevo RestauranteDTO
+        // Es posible que necesites configurar valores iniciales como hora de apertura y cierre
         cargarDatosIniciales();
-        cargarHorasDisponibles(restaurante);
+        cargarHorasDisponibles(this.restaurante);
     }
+
 
     /**
      * Carga los datos iniciales en los componentes de la interfaz. Se cargan
@@ -69,6 +70,10 @@ public class Reservaciones extends javax.swing.JFrame {
 
     private void cargarHorasDisponibles(RestauranteDTO restaurante) {
         try {
+            if (restaurante == null) {
+                JOptionPane.showMessageDialog(this, "Restaurante no establecido", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             // Crear instancia de HorarioRestauranteFCD
             HorarioRestauranteFCD horarioFCD = new HorarioRestauranteFCD();
 

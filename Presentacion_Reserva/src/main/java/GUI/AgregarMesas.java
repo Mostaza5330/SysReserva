@@ -288,17 +288,7 @@ public class AgregarMesas extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-/**
-     * Este método se ejecuta cuando se hace clic en un panel de la interfaz
-     * gráfica para agregar una nueva mesa.
-     *
-     * @param evt El evento de mouse que contiene información sobre el clic
-     * realizado.
-     */
-    private void agregarMesaPnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_agregarMesaPnMouseClicked
-        new AgregarMesas().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_agregarMesaPnMouseClicked
+
     /**
      * Este método se ejecuta cuando se hace clic en el botón "Regresar".
      *
