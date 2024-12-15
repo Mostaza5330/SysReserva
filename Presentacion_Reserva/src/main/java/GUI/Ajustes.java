@@ -4,8 +4,10 @@
  */
 package GUI;
 
+import BO.RestauranteBO;
 import Fachada.HorarioRestauranteFCD;
 import DTOs.RestauranteDTO;
+import Excepciones.BOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
@@ -32,7 +34,6 @@ public class Ajustes extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel9 = new javax.swing.JLabel();
         regresarBtn = new javax.swing.JButton();
         establecerHorarioBtn = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
@@ -40,16 +41,11 @@ public class Ajustes extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         horaCierreTimePicker = new raven.datetime.component.time.TimePicker();
         horaInicioTimePicker = new raven.datetime.component.time.TimePicker();
+        jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel9.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel9.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 24)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Horario restaurante");
-        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 140, -1, -1));
 
         regresarBtn.setBackground(new java.awt.Color(201, 60, 32));
         regresarBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
@@ -96,6 +92,11 @@ public class Ajustes extends javax.swing.JFrame {
         horaInicioTimePicker.setForeground(new java.awt.Color(255, 255, 255));
         horaInicioTimePicker.setColor(new java.awt.Color(201, 60, 32));
 
+        jLabel9.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel9.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 48)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("Horario restaurante");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -106,11 +107,17 @@ public class Ajustes extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 541, Short.MAX_VALUE)
                 .addComponent(horaCierreTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(154, 154, 154))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(420, 420, 420)
+                .addComponent(jLabel9)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(245, Short.MAX_VALUE)
+                .addContainerGap(98, Short.MAX_VALUE)
+                .addComponent(jLabel9)
+                .addGap(83, 83, 83)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(horaInicioTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(horaCierreTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -129,7 +136,9 @@ public class Ajustes extends javax.swing.JFrame {
     }//GEN-LAST:event_regresarBtnActionPerformed
 
     private void establecerHorarioBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_establecerHorarioBtnActionPerformed
+
         try {
+            // Validar la selección de horas
             LocalTime apertura = horaInicioTimePicker.getSelectedTime();
             LocalTime cierre = horaCierreTimePicker.getSelectedTime();
 
@@ -137,27 +146,59 @@ public class Ajustes extends javax.swing.JFrame {
                 throw new IllegalArgumentException("Debe seleccionar ambas horas.");
             }
 
-            // Convertir LocalTime a String con formato
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-            String aperturaStr = apertura.format(formatter);
-            String cierreStr = cierre.format(formatter);
+            if (!cierre.isAfter(apertura)) {
+                throw new IllegalArgumentException("La hora de cierre debe ser posterior a la hora de apertura.");
+            }
 
-            RestauranteDTO restaurante = new RestauranteDTO();
-            HorarioRestauranteFCD fachadaHorario = new HorarioRestauranteFCD();
+            // Crear instancia del Business Object para restaurante
+            RestauranteBO restauranteBO = new RestauranteBO();
 
-            // Establecer horas en la fachada
-            fachadaHorario.establecerHoraApertura(restaurante, aperturaStr);
-            fachadaHorario.establecerHoraCierre(restaurante, cierreStr);
+            try {
+                // Llamar al método de cambio de horario en la capa de negocio
+                restauranteBO.cambiarHoraRestaurante(apertura, cierre);
 
-            JOptionPane.showMessageDialog(this, "Horario actualizado exitosamente.\n"
-                    + "Apertura: " + aperturaStr + "\nCierre: " + cierreStr,
-                    "Confirmación", JOptionPane.INFORMATION_MESSAGE);
+                // Crear instancia de la fachada de horarios
+                HorarioRestauranteFCD fachadaHorario = new HorarioRestauranteFCD();
+
+                // Convertir LocalTime a String con formato para la fachada
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+                String aperturaStr = apertura.format(formatter);
+                String cierreStr = cierre.format(formatter);
+
+                // Obtener o crear un restauranteDTO
+                RestauranteDTO restauranteDTO = restauranteBO.consultar();
+
+                // Establecer horas en la fachada
+                fachadaHorario.establecerHoraApertura(restauranteDTO, aperturaStr);
+                fachadaHorario.establecerHoraCierre(restauranteDTO, cierreStr);
+
+                // Mostrar mensaje de éxito
+                JOptionPane.showMessageDialog(this,
+                        String.format("Horario actualizado exitosamente.\nApertura: %s\nCierre: %s",
+                                aperturaStr, cierreStr),
+                        "Confirmación",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (BOException e) {
+                // Manejar errores específicos de la capa de negocio
+                JOptionPane.showMessageDialog(this,
+                        "Error al actualizar el horario: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocurrió un error al establecer el horario.", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Ocurrió un error al establecer el horario: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
+
     }//GEN-LAST:event_establecerHorarioBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

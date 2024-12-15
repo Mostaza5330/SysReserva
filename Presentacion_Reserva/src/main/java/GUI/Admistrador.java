@@ -232,7 +232,7 @@ public class Admistrador extends javax.swing.JFrame {
                 .addContainerGap(21, Short.MAX_VALUE))
         );
 
-        jPanel1.add(cancelarReserva, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 470, -1, -1));
+        jPanel1.add(cancelarReserva, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 480, -1, -1));
 
         agregarMesaPn.setBackground(new java.awt.Color(201, 60, 32));
         agregarMesaPn.setCursorHandEnabled(true);
@@ -256,20 +256,20 @@ public class Admistrador extends javax.swing.JFrame {
         agregarMesaPn.setLayout(agregarMesaPnLayout);
         agregarMesaPnLayout.setHorizontalGroup(
             agregarMesaPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, agregarMesaPnLayout.createSequentialGroup()
-                .addContainerGap(44, Short.MAX_VALUE)
+            .addGroup(agregarMesaPnLayout.createSequentialGroup()
+                .addGap(42, 42, 42)
                 .addComponent(jLabel1)
-                .addGap(39, 39, 39))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
         agregarMesaPnLayout.setVerticalGroup(
             agregarMesaPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(agregarMesaPnLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(14, 14, 14)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
-        jPanel1.add(agregarMesaPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 250, 320, -1));
+        jPanel1.add(agregarMesaPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, 320, 90));
 
         salirPn.setBackground(new java.awt.Color(201, 60, 32));
         salirPn.setCursorHandEnabled(true);
@@ -293,10 +293,10 @@ public class Admistrador extends javax.swing.JFrame {
         salirPn.setLayout(salirPnLayout);
         salirPnLayout.setHorizontalGroup(
             salirPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, salirPnLayout.createSequentialGroup()
-                .addContainerGap(142, Short.MAX_VALUE)
+            .addGroup(salirPnLayout.createSequentialGroup()
+                .addGap(135, 135, 135)
                 .addComponent(jLabel6)
-                .addGap(130, 130, 130))
+                .addContainerGap(137, Short.MAX_VALUE))
         );
         salirPnLayout.setVerticalGroup(
             salirPnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -306,7 +306,7 @@ public class Admistrador extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        jPanel1.add(salirPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 580, 340, -1));
+        jPanel1.add(salirPn, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 590, 340, -1));
 
         panelRound2.setBackground(new java.awt.Color(201, 60, 32));
         panelRound2.setToolTipText("");
@@ -377,7 +377,7 @@ public class Admistrador extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
         );
 
-        jPanel1.add(reportePn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, -1, -1));
+        jPanel1.add(reportePn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, -1, 90));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
 

@@ -240,7 +240,7 @@ public class CancelarReservacion extends javax.swing.JFrame {
                 regresarBtnActionPerformed(evt);
             }
         });
-        Fondo.add(regresarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 630, 140, 50));
+        Fondo.add(regresarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 650, 140, 50));
 
         jLabel3.setBackground(new java.awt.Color(255, 255, 255));
         jLabel3.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 24)); // NOI18N
@@ -279,7 +279,7 @@ public class CancelarReservacion extends javax.swing.JFrame {
                 btnEliminarActionPerformed(evt);
             }
         });
-        Fondo.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 640, 140, 50));
+        Fondo.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 650, 140, 50));
 
         btnLimpiar.setBackground(new java.awt.Color(201, 60, 32));
         btnLimpiar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N

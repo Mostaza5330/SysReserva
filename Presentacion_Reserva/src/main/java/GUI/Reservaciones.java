@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
@@ -36,6 +36,7 @@ public class Reservaciones extends javax.swing.JFrame {
     private IClienteFCD clienteFCD; // Fachada para gestionar clientes
     private IMesaFCD mesaFCD; // Fachada para gestionar mesas
     private IReservaFCD reservaFCD; // Fachada para gestionar reservaciones
+    private RestauranteDTO restaurante;
 
     /**
      * Constructor de la clase Reservaciones. Inicializa los componentes de la
@@ -49,7 +50,7 @@ public class Reservaciones extends javax.swing.JFrame {
         this.reservaFCD = new ReservaFCD();
 
         cargarDatosIniciales();
-        cargarHorasDisponibles();
+        cargarHorasDisponibles(restaurante);
     }
 
     /**
@@ -66,21 +67,17 @@ public class Reservaciones extends javax.swing.JFrame {
         }
     }
 
-    private void cargarHorasDisponibles() {
+    private void cargarHorasDisponibles(RestauranteDTO restaurante) {
         try {
             // Crear instancia de HorarioRestauranteFCD
             HorarioRestauranteFCD horarioFCD = new HorarioRestauranteFCD();
-            RestauranteDTO restaurante = new RestauranteDTO();
 
-            // Obtener horarios del restaurante
-            LocalTime horaApertura = restaurante.getHoraApertura();
-            LocalTime horaCierre = restaurante.getHoraCierre();
+            // Obtener los horarios como String desde la fachada
+            String horaAperturaStr = horarioFCD.obtenerHoraAperturaString(restaurante);
+            String horaCierreStr = horarioFCD.obtenerHoraCierreString(restaurante);
 
-            // Limpiar el combo box antes de agregar nuevos elementos
-            cbxHoras.removeAllItems();
-
-            // Si no hay horarios establecidos, mostrar mensaje y salir
-            if (horaApertura == null || horaCierre == null) {
+            // Validar que existan horarios establecidos
+            if (horaAperturaStr == null || horaCierreStr == null) {
                 JOptionPane.showMessageDialog(this,
                         "No hay horarios establecidos para el restaurante.",
                         "Error",
@@ -88,24 +85,20 @@ public class Reservaciones extends javax.swing.JFrame {
                 return;
             }
 
-            // Formatear las horas para mostrarlas en formato 12 horas
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+            // Limpiar el combo box antes de agregar nuevos elementos
+            cbxHoras.removeAllItems();
 
-            // Agregar horarios en intervalos de 30 minutos
-            LocalTime tiempoActual = horaApertura;
-            while (!tiempoActual.isAfter(horaCierre)) {
-                // Agregar el tiempo actual al combo box
-                cbxHoras.addItem(tiempoActual.format(formatter));
-
-                // Incrementar en 30 minutos
-                tiempoActual = tiempoActual.plusMinutes(30);
-
-                // Si el siguiente intervalo excede la hora de cierre, detener
-                if (tiempoActual.isAfter(horaCierre)) {
-                    break;
-                }
+            // Obtener y agregar los horarios disponibles al combo box
+            List<String> horariosDisponibles = horarioFCD.obtenerHorariosDisponibles(restaurante);
+            for (String horario : horariosDisponibles) {
+                cbxHoras.addItem(horario);
             }
 
+        } catch (IllegalStateException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Error al cargar los horarios disponibles: " + e.getMessage(),
@@ -222,13 +215,13 @@ public class Reservaciones extends javax.swing.JFrame {
         cancelarBtn.setBackground(new java.awt.Color(201, 60, 32));
         cancelarBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         cancelarBtn.setForeground(new java.awt.Color(255, 255, 255));
-        cancelarBtn.setText("Cancelar");
+        cancelarBtn.setText("Regresar");
         cancelarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelarBtnActionPerformed(evt);
             }
         });
-        Fondo.add(cancelarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 650, 140, 50));
+        Fondo.add(cancelarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 650, 140, 50));
 
         jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 24)); // NOI18N

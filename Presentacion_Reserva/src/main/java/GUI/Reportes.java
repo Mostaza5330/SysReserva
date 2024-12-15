@@ -188,7 +188,7 @@ public class Reportes extends javax.swing.JFrame {
         atrasBtn.setBackground(new java.awt.Color(201, 60, 32));
         atrasBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         atrasBtn.setForeground(new java.awt.Color(255, 255, 255));
-        atrasBtn.setText("Cancelar");
+        atrasBtn.setText("Regresar");
         atrasBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 atrasBtnActionPerformed(evt);

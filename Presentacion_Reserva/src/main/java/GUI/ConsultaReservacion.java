@@ -152,9 +152,6 @@ public class ConsultaReservacion extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        mesasPanel = new Control.PanelRound();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        reservacionesTabla = new javax.swing.JTable();
         tituloPanel = new Control.PanelRound();
         Titulo = new javax.swing.JLabel();
         Fondo = new javax.swing.JPanel();
@@ -166,62 +163,16 @@ public class ConsultaReservacion extends javax.swing.JFrame {
         nombreClienteCB = new javax.swing.JComboBox<>();
         numeroTelefonoTxt = new javax.swing.JTextField();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        panelGlowingGradient1 = new Control.PanelGlowingGradient();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        reservacionesTabla = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        mesasPanel.setBackground(new java.awt.Color(51, 51, 51));
-        mesasPanel.setForeground(new java.awt.Color(102, 102, 102));
-        mesasPanel.setRoundBottomLeft(50);
-        mesasPanel.setRoundBottomRight(50);
-        mesasPanel.setRoundTopLeft(50);
-        mesasPanel.setRoundTopRight(50);
-
-        reservacionesTabla.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "No.Mesa", "Fecha y hora", "Tamaño de mesa", "Lugar", "Cliente"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(reservacionesTabla);
-        if (reservacionesTabla.getColumnModel().getColumnCount() > 0) {
-            reservacionesTabla.getColumnModel().getColumn(0).setMinWidth(20);
-        }
-
-        javax.swing.GroupLayout mesasPanelLayout = new javax.swing.GroupLayout(mesasPanel);
-        mesasPanel.setLayout(mesasPanelLayout);
-        mesasPanelLayout.setHorizontalGroup(
-            mesasPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mesasPanelLayout.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
-        );
-        mesasPanelLayout.setVerticalGroup(
-            mesasPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mesasPanelLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 565, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(33, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(mesasPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(677, 46, 570, -1));
-
-        tituloPanel.setBackground(new java.awt.Color(102, 102, 102));
+        tituloPanel.setBackground(new java.awt.Color(201, 60, 32));
         tituloPanel.setRoundBottomLeft(50);
         tituloPanel.setRoundBottomRight(50);
         tituloPanel.setRoundTopLeft(50);
@@ -251,11 +202,11 @@ public class ConsultaReservacion extends javax.swing.JFrame {
 
         getContentPane().add(tituloPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 46, 480, 110));
 
-        Fondo.setBackground(new java.awt.Color(22, 22, 22));
+        Fondo.setBackground(new java.awt.Color(12, 11, 29));
         Fondo.setForeground(new java.awt.Color(51, 51, 51));
         Fondo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        buscarBtn.setBackground(new java.awt.Color(102, 102, 102));
+        buscarBtn.setBackground(new java.awt.Color(201, 60, 32));
         buscarBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         buscarBtn.setForeground(new java.awt.Color(255, 255, 255));
         buscarBtn.setText("Buscar");
@@ -266,7 +217,7 @@ public class ConsultaReservacion extends javax.swing.JFrame {
         });
         Fondo.add(buscarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 620, 140, 50));
 
-        cancelarBtn.setBackground(new java.awt.Color(102, 102, 102));
+        cancelarBtn.setBackground(new java.awt.Color(201, 60, 32));
         cancelarBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         cancelarBtn.setForeground(new java.awt.Color(255, 255, 255));
         cancelarBtn.setText("Regresar");
@@ -295,16 +246,58 @@ public class ConsultaReservacion extends javax.swing.JFrame {
         jLabel6.setText("Nombre del cliente");
         Fondo.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 330, -1, -1));
 
+        nombreClienteCB.setBackground(new java.awt.Color(201, 60, 32));
         nombreClienteCB.setForeground(new java.awt.Color(255, 255, 255));
         Fondo.add(nombreClienteCB, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 330, 300, 40));
 
-        numeroTelefonoTxt.setBackground(new java.awt.Color(86, 86, 86));
+        numeroTelefonoTxt.setBackground(new java.awt.Color(201, 60, 32));
         Fondo.add(numeroTelefonoTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 270, 300, 40));
 
-        jDateChooser1.setBackground(new java.awt.Color(86, 86, 86));
+        jDateChooser1.setBackground(new java.awt.Color(12, 11, 29));
         jDateChooser1.setForeground(new java.awt.Color(255, 255, 255));
         jDateChooser1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         Fondo.add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(343, 200, 290, 40));
+
+        panelGlowingGradient1.setBackground(new java.awt.Color(12, 11, 29));
+        panelGlowingGradient1.setBackgroundLight(new java.awt.Color(12, 11, 29));
+        panelGlowingGradient1.setGradientColor2(new java.awt.Color(201, 60, 32));
+
+        jLabel5.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel5.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 24)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Reservaciones");
+        panelGlowingGradient1.add(jLabel5);
+        jLabel5.setBounds(220, 30, 160, 32);
+
+        reservacionesTabla.setBackground(new java.awt.Color(12, 11, 29));
+        reservacionesTabla.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "No.Mesa", "Fecha y hora", "Tamaño de mesa", "Lugar", "Cliente"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(reservacionesTabla);
+        if (reservacionesTabla.getColumnModel().getColumnCount() > 0) {
+            reservacionesTabla.getColumnModel().getColumn(0).setMinWidth(20);
+        }
+
+        panelGlowingGradient1.add(jScrollPane1);
+        jScrollPane1.setBounds(40, 70, 527, 540);
+
+        Fondo.add(panelGlowingGradient1, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 60, 610, 650));
 
         getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
 
@@ -370,11 +363,12 @@ public class ConsultaReservacion extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private Control.PanelRound mesasPanel;
     private javax.swing.JComboBox<String> nombreClienteCB;
     private javax.swing.JTextField numeroTelefonoTxt;
+    private Control.PanelGlowingGradient panelGlowingGradient1;
     private javax.swing.JTable reservacionesTabla;
     private Control.PanelRound tituloPanel;
     // End of variables declaration//GEN-END:variables
