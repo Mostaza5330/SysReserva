@@ -131,7 +131,6 @@ public class Reservaciones extends javax.swing.JFrame {
         Fondo = new javax.swing.JPanel();
         confirmarBtn = new javax.swing.JButton();
         cancelarBtn = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -144,8 +143,10 @@ public class Reservaciones extends javax.swing.JFrame {
         cbxHoras = new javax.swing.JComboBox<>();
         cbxNumPersonas = new javax.swing.JComboBox<>();
         dcFecha = new com.toedter.calendar.JDateChooser();
+        panelGlowingGradient1 = new Control.PanelGlowingGradient();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblMesas = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -176,12 +177,6 @@ public class Reservaciones extends javax.swing.JFrame {
             }
         });
         Fondo.add(cancelarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 650, 140, 50));
-
-        jLabel3.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel3.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Mesas para la reservacion");
-        Fondo.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 90, -1, -1));
 
         jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 24)); // NOI18N
@@ -265,6 +260,10 @@ public class Reservaciones extends javax.swing.JFrame {
         dcFecha.setForeground(new java.awt.Color(255, 255, 255));
         Fondo.add(dcFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 300, 40));
 
+        panelGlowingGradient1.setBackground(new java.awt.Color(12, 11, 29));
+        panelGlowingGradient1.setBackgroundLight(new java.awt.Color(12, 11, 29));
+        panelGlowingGradient1.setGradientColor2(new java.awt.Color(201, 60, 32));
+
         tblMesas.setBackground(new java.awt.Color(12, 11, 29));
         tblMesas.setForeground(new java.awt.Color(255, 255, 255));
         tblMesas.setModel(new javax.swing.table.DefaultTableModel(
@@ -286,7 +285,17 @@ public class Reservaciones extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblMesas);
 
-        Fondo.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 140, -1, 500));
+        panelGlowingGradient1.add(jScrollPane1);
+        jScrollPane1.setBounds(26, 70, 460, 500);
+
+        jLabel3.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel3.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 24)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Mesas para la reservacion");
+        panelGlowingGradient1.add(jLabel3);
+        jLabel3.setBounds(120, 30, 281, 32);
+
+        Fondo.add(panelGlowingGradient1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 80, 510, 600));
 
         getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
 
@@ -383,6 +392,7 @@ public class Reservaciones extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private Control.PanelGlowingGradient panelGlowingGradient1;
     private Control.PanelRound panelRound1;
     private javax.swing.JTable tblMesas;
     private javax.swing.JTextField txtCosto;
