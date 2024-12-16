@@ -1,7 +1,14 @@
 package GUI;
 
+import BO.ClienteBO;
+import DTOs.ClienteDTO;
+import Excepciones.NegocioException;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,12 +32,74 @@ import javax.swing.JPanel;
  */
 public class Admistrador extends javax.swing.JFrame {
 
+    private ClienteBO clientesBO;
+
     /**
      * Crea una nueva instancia de la clase Administrador e inicializa la
      * interfaz gráfica.
      */
     public Admistrador() {
         initComponents();
+        this.clientesBO = new ClienteBO();
+    }
+
+    /**
+     * Método para generar clientes aleatorios para inserción masiva
+     *
+     * @param cantidad Número de clientes a generar
+     * @return Lista de ClienteDTO generados aleatoriamente
+     */
+    private List<ClienteDTO> generarClientesAleatorios(int cantidad) {
+        List<ClienteDTO> clientesGenerados = new ArrayList<>();
+
+        for (int i = 0; i < cantidad; i++) {
+            ClienteDTO cliente = new ClienteDTO();
+
+            // Generar datos aleatorios para el cliente
+            // Use current time + counter to create unique IDs
+            cliente.setId(String.valueOf(System.currentTimeMillis() + i));
+
+            // Generate more realistic names
+            cliente.setNombre(generarNombreAleatorio());
+            cliente.setTelefono(generarTelefonoAleatorio());
+
+            clientesGenerados.add(cliente);
+        }
+
+        return clientesGenerados;
+    }
+
+    /**
+     * Genera un nombre aleatorio para el cliente
+     *
+     * @return Nombre generado
+     */
+    private String generarNombreAleatorio() {
+        String[] nombres = {
+            "Juan", "María", "Carlos", "Ana", "Luis", "Laura", "Pedro", "Sofía",
+            "Miguel", "Elena", "José", "Carmen", "David", "Isabel", "Rafael"
+        };
+
+        String[] apellidos = {
+            "García", "Martínez", "López", "Rodríguez", "Hernández", "González",
+            "Pérez", "Sánchez", "Ramírez", "Torres", "Flores", "Rivera", "Díaz"
+        };
+
+        return nombres[(int) (Math.random() * nombres.length)] + " "
+                + apellidos[(int) (Math.random() * apellidos.length)];
+    }
+
+    /**
+     * Genera un número de teléfono aleatorio
+     *
+     * @return Número de teléfono como cadena
+     */
+    private String generarTelefonoAleatorio() {
+        StringBuilder telefono = new StringBuilder("55");
+        for (int i = 0; i < 8; i++) {
+            telefono.append((int) (Math.random() * 10));
+        }
+        return telefono.toString();
     }
 
     /**
@@ -425,6 +494,30 @@ public class Admistrador extends javax.swing.JFrame {
      * @param evt el evento del mouse que activó este método
      */
     private void insercionPnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_insercionPnMouseClicked
+        try {
+            // Generar una lista de 20 clientes aleatorios
+            List<ClienteDTO> clientesGenerados = generarClientesAleatorios(20);
+
+            // Llamar al método de negocio para insertar los clientes
+            clientesBO.insercionMasivaClientes(clientesGenerados);
+
+            // Mostrar mensaje de éxito al usuario
+            JOptionPane.showMessageDialog(this,
+                    "Se insertaron 20 clientes de manera exitosa.",
+                    "Inserción Exitosa",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (NegocioException ex) {
+            // Registrar el error en el logger
+            Logger.getLogger(Admistrador.class.getName()).log(Level.SEVERE,
+                    "Error al insertar clientes", ex);
+
+            // Mostrar mensaje de error al usuario
+            JOptionPane.showMessageDialog(this,
+                    "Error al insertar clientes: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
 
     }//GEN-LAST:event_insercionPnMouseClicked
 

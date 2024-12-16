@@ -33,4 +33,6 @@ public interface IClienteDAO {
      */
     public List<Cliente> obtenerClientes() throws DAOException;
     
+    public void insercionMasivaClientes(List<Cliente> clientes) throws DAOException;
+    
 }

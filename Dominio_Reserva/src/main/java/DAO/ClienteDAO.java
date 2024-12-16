@@ -30,7 +30,37 @@ public class ClienteDAO implements IClienteDAO{
         this.conexion = new Conexion();
     }
 
-   
+   /**
+     * Inserta masivamente una lista de clientes en la base de datos.
+     * 
+     * @param clientes Lista de clientes a insertar.
+     * @throws DAOException En caso de error durante la inserción.
+     */
+     @Override
+    public void insercionMasivaClientes(List<Cliente> clientes) throws DAOException {
+        EntityManager em = null;
+        try {
+            em = conexion.getEntityManager();
+            em.getTransaction().begin();
+
+            for (Cliente cliente : clientes) {
+                em.persist(cliente); // Inserta cada cliente
+            }
+
+            em.getTransaction().commit();
+            LOG.info("Inserción masiva de clientes completada exitosamente.");
+        } catch (PersistenceException | ConexionException e) {
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback(); // Revertir transacción en caso de error
+            }
+            LOG.log(Level.SEVERE, "Error en la inserción masiva de clientes", e);
+            throw new DAOException("No se pudieron insertar los clientes masivamente", e);
+        } finally {
+            if (em != null) {
+                em.close(); // Cierra el EntityManager
+            }
+        }
+    }
 
     /**
      * Obtiene un cliente en especifico de la base de datos.
