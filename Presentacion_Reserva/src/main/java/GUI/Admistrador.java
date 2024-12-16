@@ -498,8 +498,8 @@ public class Admistrador extends javax.swing.JFrame {
             // Generar una lista de 20 clientes aleatorios
             List<ClienteDTO> clientesGenerados = generarClientesAleatorios(20);
 
-            // Llamar al método de negocio para insertar los clientes
-            clientesBO.insercionMasivaClientes(clientesGenerados);
+            // Llamar al método de negocio (o al DAO directamente) para insertar los clientes
+            clientesBO.insercionMasivaClientes(clientesGenerados); // Inserción sin cifrado aquí
 
             // Mostrar mensaje de éxito al usuario
             JOptionPane.showMessageDialog(this,

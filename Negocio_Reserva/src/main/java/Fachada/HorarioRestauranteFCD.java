@@ -2,105 +2,23 @@ package Fachada;
 
 import DTOs.RestauranteDTO;
 import interfacesFachada.IHorarioRestauranteFCD;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Clase fachada para gestionar el horario de apertura y cierre de un
- * restaurante. Esta clase permite establecer las horas de apertura y cierre de
- * un restaurante, asegurándose de que las horas sean válidas.
+ * restaurante utilizando LocalTime para operaciones internas.
  *
  * @autor Sebastian Murrieta Verduzco - 233463
  */
 public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
 
     private static final Logger logger = Logger.getLogger(HorarioRestauranteFCD.class.getName());
-    private static final DateTimeFormatter HORA_FORMATO = DateTimeFormatter.ofPattern("hh:mm a");
-
-    /**
-     * Establece la hora de apertura del restaurante.
-     *
-     * @param restaurante el restaurante cuyo horario se va a establecer
-     * @param horaAperturaString la hora de apertura en formato "hh:mm a"
-     * @throws IllegalArgumentException si el formato de la hora no es válido
-     */
-    @Override
-    public void establecerHoraApertura(RestauranteDTO restaurante, String horaAperturaString)
-            throws IllegalArgumentException {
-        if (horaAperturaString == null || !esFormatoHoraValido(horaAperturaString)) {
-            logger.severe("Error: La hora de apertura '" + horaAperturaString + "' no es válida.");
-            throw new IllegalArgumentException("Formato de hora inválido: " + horaAperturaString);
-        }
-
-        try {
-            LocalTime horaApertura = LocalTime.parse(horaAperturaString, HORA_FORMATO);
-            restaurante.setHoraApertura(horaApertura);
-            logger.info("Hora de apertura actualizada: " + horaApertura);
-        } catch (Exception e) {
-            logger.severe("Error al establecer la hora de apertura: " + e.getMessage());
-            throw new IllegalArgumentException("Error al procesar la hora de apertura: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Establece la hora de cierre del restaurante.
-     *
-     * @param restaurante el restaurante cuyo horario se va a establecer
-     * @param horaCierreString la hora de cierre en formato "hh:mm a"
-     * @throws IllegalArgumentException si el formato de la hora no es válido o
-     * si la hora de cierre es anterior a la hora de apertura
-     */
-    @Override
-    public void establecerHoraCierre(RestauranteDTO restaurante, String horaCierreString)
-            throws IllegalArgumentException {
-        if (horaCierreString == null || !esFormatoHoraValido(horaCierreString)) {
-            logger.severe("Error: La hora de cierre '" + horaCierreString + "' no es válida.");
-            throw new IllegalArgumentException("Formato de hora inválido: " + horaCierreString);
-        }
-
-        try {
-            LocalTime horaCierre = LocalTime.parse(horaCierreString, HORA_FORMATO);
-            if (!isHoraCierreValida(restaurante, horaCierre)) {
-                logger.severe("Error: La hora de cierre debe ser posterior a la de apertura.");
-                throw new IllegalArgumentException("La hora de cierre debe ser posterior a la hora de apertura");
-            }
-
-            restaurante.setHoraCierre(horaCierre);
-            logger.info("Hora de cierre actualizada: " + horaCierre);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.severe("Error al establecer la hora de cierre: " + e.getMessage());
-            throw new IllegalArgumentException("Error al procesar la hora de cierre: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Obtiene la hora de apertura del restaurante como String.
-     *
-     * @param restaurante el DTO del restaurante
-     * @return String con la hora de apertura en formato "hh:mm a", o null si no
-     * está establecida
-     */
-    public String obtenerHoraAperturaString(RestauranteDTO restaurante) {
-        LocalTime horaApertura = restaurante.getHoraApertura();
-        return horaApertura != null ? horaApertura.format(HORA_FORMATO) : null;
-    }
-
-    /**
-     * Obtiene la hora de cierre del restaurante como String.
-     *
-     * @param restaurante el DTO del restaurante
-     * @return String con la hora de cierre en formato "hh:mm a", o null si no
-     * está establecida
-     */
-    public String obtenerHoraCierreString(RestauranteDTO restaurante) {
-        LocalTime horaCierre = restaurante.getHoraCierre();
-        return horaCierre != null ? horaCierre.format(HORA_FORMATO) : null;
-    }
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("hh:mm a").withLocale(Locale.US);
 
     /**
      * Obtiene una lista de horarios disponibles en intervalos de 30 minutos
@@ -124,14 +42,56 @@ public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
         LocalTime tiempoActual = horaApertura;
 
         while (!tiempoActual.isAfter(horaCierre)) {
-            horariosDisponibles.add(tiempoActual.format(HORA_FORMATO));
+            horariosDisponibles.add(tiempoActual.format(DISPLAY_FORMATTER));
             tiempoActual = tiempoActual.plusMinutes(30);
+
             if (tiempoActual.isAfter(horaCierre)) {
                 break;
             }
         }
 
         return horariosDisponibles;
+    }
+
+    @Override
+    public void establecerHoraApertura(RestauranteDTO restaurante, LocalTime horaApertura)
+            throws IllegalArgumentException {
+        if (horaApertura == null) {
+            logger.severe("Error: La hora de apertura no puede ser nula");
+            throw new IllegalArgumentException("La hora de apertura no puede ser nula");
+        }
+
+        try {
+            restaurante.setHoraApertura(horaApertura);
+            logger.info("Hora de apertura actualizada: " + horaApertura.format(DISPLAY_FORMATTER));
+        } catch (Exception e) {
+            logger.severe("Error al establecer la hora de apertura: " + e.getMessage());
+            throw new IllegalArgumentException("Error al establecer la hora de apertura");
+        }
+    }
+
+    @Override
+    public void establecerHoraCierre(RestauranteDTO restaurante, LocalTime horaCierre)
+            throws IllegalArgumentException {
+        if (horaCierre == null) {
+            logger.severe("Error: La hora de cierre no puede ser nula");
+            throw new IllegalArgumentException("La hora de cierre no puede ser nula");
+        }
+
+        try {
+            if (!isHoraCierreValida(restaurante, horaCierre)) {
+                logger.severe("Error: La hora de cierre debe ser posterior a la de apertura");
+                throw new IllegalArgumentException("La hora de cierre debe ser posterior a la hora de apertura");
+            }
+
+            restaurante.setHoraCierre(horaCierre);
+            logger.info("Hora de cierre actualizada: " + horaCierre.format(DISPLAY_FORMATTER));
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.severe("Error al establecer la hora de cierre: " + e.getMessage());
+            throw new IllegalArgumentException("Error al establecer la hora de cierre");
+        }
     }
 
     /**
@@ -143,21 +103,19 @@ public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
      */
     private boolean isHoraCierreValida(RestauranteDTO restaurante, LocalTime horaCierre) {
         LocalTime horaApertura = restaurante.getHoraApertura();
-        return horaApertura != null && horaCierre.isAfter(horaApertura);
+        return horaApertura == null || horaCierre.isAfter(horaApertura);
     }
 
     /**
-     * Valida si el formato de la hora es correcto (hh:mm a).
-     *
-     * @param hora la cadena de hora a validar
-     * @return true si el formato es válido, false de lo contrario
+     * Convierte LocalTime a String para mostrar en la interfaz de usuario.
+     * 
+     * @param time la hora a convertir
+     * @return String formateado para mostrar
      */
-    private boolean esFormatoHoraValido(String hora) {
-        try {
-            LocalTime.parse(hora, HORA_FORMATO);
-            return true;
-        } catch (Exception e) {
-            return false;
+    public String formatearHoraParaMostrar(LocalTime time) {
+        if (time == null) {
+            return "";
         }
+        return time.format(DISPLAY_FORMATTER);
     }
 }

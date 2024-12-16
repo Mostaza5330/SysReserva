@@ -4,12 +4,8 @@ import Convertidores.ClienteCVR;
 import Convertidores.MesaCVR;
 import Convertidores.ReservaCVR;
 import DAO.ReservaDAO;
-import DTOs.ClienteDTO;
-import DTOs.MesaDTO;
-import DTOs.ReservaDTO;
-import Entidades.Cliente;
-import Entidades.Mesa;
-import Entidades.Reserva;
+import DTOs.*;
+import Entidades.*;
 import Excepciones.BOException;
 import Excepciones.ConversionException;
 import Excepciones.DAOException;
@@ -17,41 +13,25 @@ import Interfaces.IReservaBO;
 import Interfaces.IReservaDAO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * Clase intermediaria entre la capa de DAO para la entidad Reserva que 
- * convierte los métodos de la clase DAO a DTO o a Entidad dependiendo del 
- * flujo. Sirve como puente para la lógica de negocio en la gestión de 
- * clientes, coordinando interacciones entre la capa de acceso a datos (DAO) 
- * y la de presentación.
- * 
- * @author Sebastian Murrieta Verduzco - 233463
+ * Business Object class that acts as an intermediary between the DAO layer and
+ * presentation layer for Reservation management. Handles conversion between DTOs
+ * and Entities while implementing business logic.
  */
 public class ReservaBO implements IReservaBO {
 
-    // Instancia de logger para realizar la depuración.
     private static final Logger LOG = Logger.getLogger(ReservaBO.class.getName());
     
-    // Instancia de la interfaz de ReservaDAO para realizar operaciones con la entidad Reserva.
-    private final IReservaDAO reservaDAO; 
-   
-    // Instancia del convertidor de objetos Reserva entre DTO y entidad.
-    private final ReservaCVR reservaCVR; 
-    
-    // Instancia del convertidor de objetos Cliente entre DTO y entidad.
+    private final IReservaDAO reservaDAO;
+    private final ReservaCVR reservaCVR;
     private final ClienteCVR clienteCVR;
-    
-    // Instancia del convertidor de objetos Mesa entre DTO y entidad.
     private final MesaCVR mesaCVR;
 
-    /**
-     * Constructor por defecto de la clase ReservaBO.
-     * Inicializa las instancias de DAO y convertidores.
-     */
     public ReservaBO() {
         this.reservaDAO = new ReservaDAO();
         this.reservaCVR = new ReservaCVR();
@@ -59,200 +39,120 @@ public class ReservaBO implements IReservaBO {
         this.mesaCVR = new MesaCVR();
     }
 
-    /**
-     * Agrega una nueva reserva.
-     * 
-     * @param reserva Objeto ReservaDTO que representa la reserva a agregar.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
     public void agregarReserva(ReservaDTO reserva) throws BOException {
-        try{
+        try {
             Reserva reservaEntity = reservaCVR.toEntity(reserva);
             reservaDAO.agregarReserva(reservaEntity);
-        } catch(DAOException de){
-            LOG.log(Level.SEVERE, "Error al agregar la reserva en DAO", de);
-            throw new BOException(de.getMessage());
+        } catch (DAOException ex) {
+            logAndThrowBOException("Error adding reservation", ex);
         }
     }
 
-    /**
-     * Consulta reservas entre dos fechas específicas.
-     * 
-     * @param inicio Fecha de inicio del periodo de consulta.
-     * @param fin Fecha de fin del periodo de consulta.
-     * @return Lista de objetos ReservaDTO que representan las reservas encontradas.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
     public List<ReservaDTO> consultarPorFecha(LocalDateTime inicio, 
-                                              LocalDateTime fin) throws BOException {
+            LocalDateTime fin) throws BOException {
         try {
-            List<Reserva> entidades = reservaDAO.consultarPorFecha(inicio, fin);
-            List<ReservaDTO> dto = new ArrayList<>();
-            
-            for (Reserva reserva : entidades) {
-                dto.add(reservaCVR.toDTO(reserva));
-            }
-           
-            return dto;
-        } catch(DAOException de){
-            LOG.log(Level.SEVERE, "Error al consultar reservas por fecha en DAO", de);
-            throw new BOException(de.getMessage());
+            return reservaDAO.consultarPorFecha(inicio, fin).stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (DAOException ex) {
+            logAndThrowBOException("Error querying reservations by date", ex);
+            return null; // Never reached, just to satisfy compiler
         }
     }
 
-    /**
-     * Verifica la disponibilidad de una mesa en una fecha específica.
-     * 
-     * @param mesa Objeto MesaDTO que representa la mesa a verificar.
-     * @param dia Fecha y hora en la cual verificar la disponibilidad.
-     * @return true si la mesa está disponible, false en caso contrario.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
     public boolean verificarPorDia(MesaDTO mesa, LocalDateTime dia) throws BOException {
         try {
             Mesa mesaEntidad = mesaCVR.toEntity(mesa);
             return reservaDAO.verificarPorDia(mesaEntidad, dia);
-        } catch(DAOException de) {
-            LOG.log(Level.SEVERE, "Error al verificar disponibilidad de la mesa en DAO", de);
-            throw new BOException(de.getMessage());
-        } catch (ConversionException ex) {
-            LOG.log(Level.SEVERE, "Error en la conversión de MesaDTO a entidad", ex);
-            throw new BOException("Error al verificar la reserva por día");
+        } catch (DAOException | ConversionException ex) {
+            logAndThrowBOException("Error verifying table availability", ex);
+            return false; // Never reached, just to satisfy compiler
         }
     }
 
-    /**
-     * Busca reservas aplicando varios filtros de búsqueda.
-     * 
-     * @param nombreCliente Nombre del cliente.
-     * @param telefonoCliente Teléfono del cliente.
-     * @param fechaReserva Fecha específica de la reserva.
-     * @param areaRestaurante Área del restaurante donde se busca la reserva.
-     * @param fechaInicio Rango de inicio de la reserva.
-     * @param fechaFin Rango de fin de la reserva.
-     * @param tamanoMesa Tamaño de la mesa.
-     * @return Lista de objetos ReservaDTO que coinciden con los filtros de búsqueda.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
-    public List<ReservaDTO> buscarReservasPorFiltros(String nombreCliente, 
-                                                     String telefonoCliente, 
-                                                     LocalDate fechaReserva, 
-                                                     String areaRestaurante, 
-                                                     LocalDate fechaInicio, 
-                                                     LocalDate fechaFin, 
-                                                     Integer tamanoMesa) 
-            throws BOException {
-        
+    public List<ReservaDTO> buscarReservasPorFiltros(
+            String nombreCliente, 
+            String telefonoCliente, 
+            LocalDate fechaReserva, 
+            String areaRestaurante, 
+            LocalDate fechaInicio, 
+            LocalDate fechaFin, 
+            Integer tamanoMesa) throws BOException {
         try {
-            List<Reserva> entidades = reservaDAO.
-                    buscarReservasPorFiltros(nombreCliente, telefonoCliente, 
-                                             fechaReserva, areaRestaurante, 
-                                             fechaInicio, fechaFin, tamanoMesa);
-            List<ReservaDTO> dto = new ArrayList<>();
-            
-            for (Reserva reserva : entidades) {
-                dto.add(reservaCVR.toDTO(reserva));
-            }
-           
-            return dto;
-        } catch(DAOException de) {
-            LOG.log(Level.SEVERE, "Error al buscar reservas por filtros en DAO", de);
-            throw new BOException(de.getMessage());
+            return reservaDAO.buscarReservasPorFiltros(
+                    nombreCliente, telefonoCliente, fechaReserva,
+                    areaRestaurante, fechaInicio, fechaFin, tamanoMesa)
+                    .stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (DAOException ex) {
+            logAndThrowBOException("Error searching reservations by filters", ex);
+            return null; // Never reached, just to satisfy compiler
         }
     }
 
-    /**
-     * Verifica si un cliente tiene reservas activas a partir de una fecha y hora específica.
-     * 
-     * @param cliente Objeto ClienteDTO que representa el cliente a verificar.
-     * @return true si el cliente tiene reservas activas, false en caso contrario.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
     public boolean verificarReservaciones(ClienteDTO cliente) throws BOException {
         try {
             Cliente clienteEntidad = clienteCVR.toEntity(cliente);
             return reservaDAO.verificarReservaciones(clienteEntidad);
-        } catch(ConversionException ce) {
-            LOG.log(Level.SEVERE, "Error en la conversión de ClienteDTO a entidad");
-            throw new BOException(ce.getMessage());
-        } catch (DAOException ex) {
-            LOG.log(Level.SEVERE, "Error al verificar reservaciones en DAO");
-            throw new BOException(ex.getMessage());
+        } catch (ConversionException | DAOException ex) {
+            logAndThrowBOException("Error verifying customer reservations", ex);
+            return false; // Never reached, just to satisfy compiler
         }
     }
 
-    /**
-     * Obtiene todas las reservas.
-     * 
-     * @return Lista de objetos ReservaDTO que representan todas las reservas.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
     public List<ReservaDTO> obtenerReservas() throws BOException {
         try {
-            List<Reserva> entidades = reservaDAO.obtenerReservas();           
-            List<ReservaDTO> dto = new ArrayList<>();
-            
-            for (Reserva reserva : entidades) {
-                dto.add(reservaCVR.toDTO(reserva));
-            }
-           
-            return dto;
-        } catch(DAOException de) {
-            LOG.log(Level.SEVERE, "Error al obtener reservas en DAO", de);
-            throw new BOException(de.getMessage());
-        }    
+            return reservaDAO.obtenerReservas().stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (DAOException ex) {
+            logAndThrowBOException("Error retrieving all reservations", ex);
+            return null; // Never reached, just to satisfy compiler
+        }
     }
 
-    /**
-     * Busca reservas por nombre y fecha de inicio y fin.
-     * 
-     * @param nombre Nombre del cliente.
-     * @param inicio Fecha de inicio de la búsqueda.
-     * @param fin Fecha de fin de la búsqueda.
-     * @return Lista de objetos ReservaDTO que coinciden con el nombre y fechas dadas.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
     public List<ReservaDTO> buscarReservas(String nombre, 
-                                           LocalDateTime inicio, 
-                                           LocalDateTime fin) throws BOException {
+            LocalDateTime inicio, 
+            LocalDateTime fin) throws BOException {
         try {
-            List<Reserva> entidades = reservaDAO.buscarReservas(nombre, inicio, fin);
-            List<ReservaDTO> dto = new ArrayList<>();
-            
-            for (Reserva reserva : entidades) {
-                dto.add(reservaCVR.toDTO(reserva));
-            }
-           
-            return dto;
-        } catch(DAOException de) {
-            LOG.log(Level.SEVERE, "Error al buscar reservas en DAO", de);
-            throw new BOException(de.getMessage());
-        }        
+            return reservaDAO.buscarReservas(nombre, inicio, fin).stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (DAOException ex) {
+            logAndThrowBOException("Error searching reservations", ex);
+            return null; // Never reached, just to satisfy compiler
+        }
     }
 
-    /**
-     * Actualiza una reserva existente.
-     * 
-     * @param reservaDTO Objeto ReservaDTO que contiene los datos de la reserva a actualizar.
-     * @throws BOException Si ocurre algún error durante la operación.
-     */
     @Override
     public void actualizarReserva(ReservaDTO reservaDTO) throws BOException {
-         try {
-             Reserva reserva = reservaCVR.toEntity(reservaDTO);
-             reservaDAO.actualizarReserva(reserva);
-        } catch(DAOException de) {
-            LOG.log(Level.SEVERE, "Error al actualizar la reserva en DAO", de);
-            throw new BOException(de.getMessage());
-        }     
+        try {
+            Reserva reserva = reservaCVR.toEntity(reservaDTO);
+            reservaDAO.actualizarReserva(reserva);
+        } catch (DAOException ex) {
+            logAndThrowBOException("Error updating reservation", ex);
+        }
     }
-    
-}
 
+    private ReservaDTO convertToDTO(Reserva reserva) {
+        try {
+            return reservaCVR.toDTO(reserva);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error converting reservation to DTO", ex);
+            throw new RuntimeException("Error converting reservation to DTO", ex);
+        }
+    }
+
+    private void logAndThrowBOException(String message, Exception ex) throws BOException {
+        LOG.log(Level.SEVERE, message, ex);
+        throw new BOException(message + ": " + ex.getMessage());
+    }
+}

@@ -136,69 +136,47 @@ public class Ajustes extends javax.swing.JFrame {
     }//GEN-LAST:event_regresarBtnActionPerformed
 
     private void establecerHorarioBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_establecerHorarioBtnActionPerformed
-
         try {
-            // Validar la selección de horas
-            LocalTime apertura = horaInicioTimePicker.getSelectedTime();
-            LocalTime cierre = horaCierreTimePicker.getSelectedTime();
+            // Obtener los tiempos seleccionados directamente como LocalTime
+            LocalTime horaApertura = horaInicioTimePicker.getSelectedTime();
+            LocalTime horaCierre = horaCierreTimePicker.getSelectedTime();
 
-            if (apertura == null || cierre == null) {
-                throw new IllegalArgumentException("Debe seleccionar ambas horas.");
+            // Validar que se hayan seleccionado las horas
+            if (horaApertura == null || horaCierre == null) {
+                throw new IllegalArgumentException("Debe seleccionar both horarios");
             }
 
-            if (!cierre.isAfter(apertura)) {
-                throw new IllegalArgumentException("La hora de cierre debe ser posterior a la hora de apertura.");
-            }
-
-            // Crear instancia del Business Object para restaurante
+            // Obtener las instancias necesarias
+            HorarioRestauranteFCD horarioFachada = new HorarioRestauranteFCD();
             RestauranteBO restauranteBO = new RestauranteBO();
+            RestauranteDTO restaurante = restauranteBO.consultar();
 
-            try {
-                // Llamar al método de cambio de horario en la capa de negocio
-                restauranteBO.cambiarHoraRestaurante(apertura, cierre);
+            // Establecer los horarios usando la fachada (ahora trabajando directamente con LocalTime)
+            horarioFachada.establecerHoraApertura(restaurante, horaApertura);
+            horarioFachada.establecerHoraCierre(restaurante, horaCierre);
 
-                // Crear instancia de la fachada de horarios
-                HorarioRestauranteFCD fachadaHorario = new HorarioRestauranteFCD();
+            // Actualizar el restaurante en la base de datos
+            restauranteBO.cambiarHoraRestaurante(horaApertura, horaCierre);
 
-                // Convertir LocalTime a String con formato para la fachada
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-                String aperturaStr = apertura.format(formatter);
-                String cierreStr = cierre.format(formatter);
+            // Convertir a String solo para mostrar el mensaje
+            String mensajeExito = String.format("Horario actualizado exitosamente.\n"
+                    + "Apertura: %s\nCierre: %s",
+                    horarioFachada.formatearHoraParaMostrar(horaApertura),
+                    horarioFachada.formatearHoraParaMostrar(horaCierre));
 
-                // Obtener o crear un restauranteDTO
-                RestauranteDTO restauranteDTO = restauranteBO.consultar();
+            // Mostrar mensaje de éxito
+            JOptionPane.showMessageDialog(this,
+                    mensajeExito,
+                    "Confirmación",
+                    JOptionPane.INFORMATION_MESSAGE);
 
-                // Establecer horas en la fachada
-                fachadaHorario.establecerHoraApertura(restauranteDTO, aperturaStr);
-                fachadaHorario.establecerHoraCierre(restauranteDTO, cierreStr);
-
-                // Mostrar mensaje de éxito
-                JOptionPane.showMessageDialog(this,
-                        String.format("Horario actualizado exitosamente.\nApertura: %s\nCierre: %s",
-                                aperturaStr, cierreStr),
-                        "Confirmación",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-            } catch (BOException e) {
-                // Manejar errores específicos de la capa de negocio
-                JOptionPane.showMessageDialog(this,
-                        "Error al actualizar el horario: " + e.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (IllegalArgumentException e) {
+        } catch (BOException | IllegalArgumentException e) {
+            // Manejar errores de lógica de negocio o validación
             JOptionPane.showMessageDialog(this,
                     e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Ocurrió un error al establecer el horario: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
         }
-
     }//GEN-LAST:event_establecerHorarioBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

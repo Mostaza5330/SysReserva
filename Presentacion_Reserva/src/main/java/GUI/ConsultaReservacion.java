@@ -15,6 +15,7 @@ import Interfaces.IClienteBO;
 import Interfaces.IReservaBO;
 import interfacesFachada.IClienteFCD;
 import interfacesFachada.IFiltrosFCD;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -93,6 +94,16 @@ public class ConsultaReservacion extends javax.swing.JFrame {
 
         // Asignar el modelo a la tabla
         reservacionesTabla.setModel(model);
+
+        // Cambiar el color del texto a blanco
+        reservacionesTabla.setForeground(Color.WHITE);
+
+        // Cambiar el color de fondo de la tabla
+        reservacionesTabla.setBackground(new java.awt.Color(12, 11, 29));
+
+        // Cambiar el color de fondo del encabezado de la tabla
+        reservacionesTabla.getTableHeader().setBackground(new java.awt.Color(12, 11, 29));
+        reservacionesTabla.getTableHeader().setForeground(new java.awt.Color(12, 11, 29));
     }
 
     /**

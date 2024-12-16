@@ -1,15 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Fachada;
 
 import BO.ReservaBO;
 import BO.RestauranteBO;
-import DTOs.ClienteDTO;
-import DTOs.MesaDTO;
-import DTOs.ReservaDTO;
-import DTOs.RestauranteDTO;
+import DTOs.*;
 import Excepciones.BOException;
 import Excepciones.FacadeException;
 import Interfaces.IReservaBO;
@@ -17,233 +10,223 @@ import Interfaces.IRestauranteBO;
 import interfacesFachada.IReservaFCD;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 import javax.swing.JOptionPane;
 
 /**
- * Clase `ReservaFCD` que implementa la interfaz `IReservaFCD`.
- * Sirve como fachada para gestionar las reservas, encapsulando
- * la lógica de negocio de validación y ejecución de reservas en 
- * restaurantes. Realiza operaciones de validación, creación y 
- * cancelación de reservas.
- * 
- * @author Sebastian Murrieta Verduzco - 233463
+ * Fachada que maneja las operaciones relacionadas con reservas.
+ * Implementa el patrón Facade para simplificar la interfaz del sistema de reservas.
  */
 public class ReservaFCD implements IReservaFCD {
 
-    IReservaBO reservaBO; // Interfaz de lógica de negocio de reserva
-    IRestauranteBO restauranteBO; // Interfaz de lógica de negocio de restaurante
+    private final IReservaBO reservaBO;
+    private final IRestauranteBO restauranteBO;
 
-    /**
-     * Constructor de `ReservaFCD`.
-     * Inicializa las implementaciones de lógica de negocio para reservas
-     * y restaurantes.
-     */
+    private static final int HORAS_ANTICIPACION = 24;
+    private static final int MESES_MAXIMOS = 1;
+    private static final int HORAS_MARGEN_CIERRE = 1;
+
     public ReservaFCD() {
         this.reservaBO = new ReservaBO();
         this.restauranteBO = new RestauranteBO();
     }
 
-    /**
-     * Agrega una reserva verificando varias condiciones necesarias para
-     * garantizar la validez de la misma.
-     *
-     * @param cliente Cliente que hace la reserva.
-     * @param mesa Mesa que se quiere reservar.
-     * @param horaFecha Fecha y hora de la reserva.
-     * @param numPersonas Número de personas que ocuparán la mesa.
-     * @param costo Costo de la reserva.
-     * @throws FacadeException Excepción lanzada en caso de error.
-     */
     @Override
-    public void agregarReserva(ClienteDTO cliente, MesaDTO mesa, 
-            LocalDateTime horaFecha, int numPersonas, double costo) 
-            throws FacadeException {
+    public void agregarReserva(ClienteDTO cliente, MesaDTO mesa, LocalDateTime horaFecha,
+                                int numPersonas, double costo) throws FacadeException {
+        System.out.println("Iniciando proceso de agregar reserva...");
+        validarParametrosNoNulos(cliente, mesa, horaFecha);
+
         try {
-            verificarTamañoMesa(mesa, numPersonas);
-            verificarFechaReservacion(horaFecha);
-            verificarHoraReservacion(horaFecha);
-            verificarReservacionesCliente(cliente);
-            verificarDisponibilidad(mesa, horaFecha);
-            hacerReserva(cliente, mesa, horaFecha, numPersonas, costo);
+            System.out.println("Validando reservaciones existentes para el cliente...");
+            validarReservacionesExistentes(cliente);
+
+            System.out.println("Validando tiempo de reservación...");
+            validarTiempoReservacion(horaFecha);
+
+            System.out.println("Validando horario del restaurante...");
+            validarHorarioRestaurante(horaFecha);
+
+            System.out.println("Validando capacidad de la mesa...");
+            validarCapacidadMesa(mesa, numPersonas);
+
+            System.out.println("Validando disponibilidad de la mesa...");
+            validarDisponibilidadMesa(mesa, horaFecha);
+
+            System.out.println("Procesando la reserva...");
+            procesarReserva(cliente, mesa, horaFecha, numPersonas, costo);
         } catch (FacadeException ex) {
-            throw new FacadeException(ex.getMessage());
+            System.err.println("Error de validación o proceso: " + ex.getMessage());
+            throw ex;
+        } catch (Exception ex) {
+            System.err.println("Error inesperado al procesar la reserva: " + ex.getMessage());
+            throw new FacadeException("Error inesperado al procesar la reserva: " + ex.getMessage());
         }
     }
 
-    /**
-     * Verifica si la cantidad de personas es compatible con la capacidad
-     * mínima y máxima de la mesa seleccionada.
-     *
-     * @param mesa Mesa a verificar.
-     * @param numPersonas Número de personas en la reserva.
-     * @throws FacadeException Excepción si el número de personas es inválido.
-     */
-    private void verificarTamañoMesa(MesaDTO mesa, int numPersonas)
-            throws FacadeException {
+    private void validarParametrosNoNulos(ClienteDTO cliente, MesaDTO mesa, LocalDateTime horaFecha) throws FacadeException {
+        if (cliente == null || mesa == null || horaFecha == null) {
+            System.err.println("Error: Los datos de la reserva no pueden ser nulos");
+            throw new FacadeException("Los datos de la reserva no pueden ser nulos");
+        }
+    }
+
+    private void validarReservacionesExistentes(ClienteDTO cliente) throws FacadeException {
+        try {
+            if (reservaBO.verificarReservaciones(cliente)) {
+                System.err.println("El cliente ya tiene una reservación activa");
+                throw new FacadeException("El cliente ya tiene una reservación activa");
+            }
+        } catch (BOException e) {
+            System.err.println("Error al verificar reservaciones previas: " + e.getMessage());
+            throw new FacadeException("Error al verificar reservaciones previas: " + e.getMessage());
+        }
+    }
+
+    private void validarTiempoReservacion(LocalDateTime horaFecha) throws FacadeException {
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime limiteMinimo = ahora.plusHours(HORAS_ANTICIPACION);
+        LocalDateTime limiteMaximo = ahora.plusMonths(MESES_MAXIMOS);
+
+        if (horaFecha.isBefore(limiteMinimo)) {
+            String mensaje = "Las reservaciones requieren " + HORAS_ANTICIPACION + " horas de anticipación";
+            System.err.println(mensaje);
+            throw new FacadeException(mensaje);
+        }
+        if (horaFecha.isAfter(limiteMaximo)) {
+            String mensaje = "No se permiten reservaciones con más de " + MESES_MAXIMOS + " mes de anticipación";
+            System.err.println(mensaje);
+            throw new FacadeException(mensaje);
+        }
+    }
+
+    private void validarHorarioRestaurante(LocalDateTime horaFecha) throws FacadeException {
+        try {
+            RestauranteDTO restaurante = restauranteBO.consultar();
+            LocalTime horaElegida = horaFecha.toLocalTime();
+            LocalTime horaCierreEfectivo = restaurante.getHoraCierre().minusHours(HORAS_MARGEN_CIERRE);
+
+            if (horaElegida.isAfter(horaCierreEfectivo)) {
+                String mensaje = "La última reservación debe ser " + HORAS_MARGEN_CIERRE +
+                        " hora antes del cierre (" + restaurante.getHoraCierre() + ")";
+                System.err.println(mensaje);
+                throw new FacadeException(mensaje);
+            }
+            if (horaElegida.isBefore(restaurante.getHoraApertura())) {
+                String mensaje = "No se aceptan reservaciones antes de abrir (" + restaurante.getHoraApertura() + ")";
+                System.err.println(mensaje);
+                throw new FacadeException(mensaje);
+            }
+        } catch (BOException e) {
+            System.err.println("Error al verificar horario del restaurante: " + e.getMessage());
+            throw new FacadeException("Error al verificar horario del restaurante: " + e.getMessage());
+        }
+    }
+
+    private void validarCapacidadMesa(MesaDTO mesa, int numPersonas) throws FacadeException {
+        if (numPersonas <= 0) {
+            System.err.println("Error: El número de personas debe ser positivo");
+            throw new FacadeException("El número de personas debe ser positivo");
+        }
         if (numPersonas < mesa.getCapacidadMinima()) {
-            throw new FacadeException("El número de personas es menor a "
-                    + "la capacidad de la mesa");
-        } else if (numPersonas > mesa.getCapacidadMaxima()) {
-            throw new FacadeException("El número de personas es mayor a "
-                    + "la capacidad de la mesa");
+            String mensaje = String.format("El número de personas (%d) es menor que el mínimo para la mesa (%d)",
+                    numPersonas, mesa.getCapacidadMinima());
+            System.err.println(mensaje);
+            throw new FacadeException(mensaje);
+        }
+        if (numPersonas > mesa.getCapacidadMaxima()) {
+            String mensaje = String.format("El número de personas (%d) excede la capacidad de la mesa (%d)",
+                    numPersonas, mesa.getCapacidadMaxima());
+            System.err.println(mensaje);
+            throw new FacadeException(mensaje);
         }
     }
 
-    /**
-     * Verifica que la reserva se haga con al menos 24 horas de anticipación y
-     * a no más de un mes.
-     *
-     * @param horaFecha Fecha y hora de la reserva.
-     * @throws FacadeException Excepción si la fecha es inválida.
-     */
-    private void verificarFechaReservacion(LocalDateTime horaFecha) 
-            throws FacadeException {
-        LocalDateTime masUnDia = LocalDateTime.now().plusHours(24);
-        LocalDateTime masUnMes = LocalDateTime.now().plusMonths(1);
-
-        if (horaFecha.isBefore(masUnDia)) {
-            throw new FacadeException("La reservación no se puede realizar a "
-                    + "menos de 24 horas, seleccione otra hora");
-        } else if (horaFecha.isAfter(masUnMes)) {
-            throw new FacadeException("La reservación no se puede realizar "
-                    + "a fechas mayores de un mes desde hoy");
-        }
-    }
-
-    /**
-     * Verifica que la hora de la reserva esté dentro del horario de apertura
-     * y cierre del restaurante.
-     *
-     * @param horaFecha Fecha y hora de la reserva.
-     * @throws FacadeException Excepción si la hora es inválida.
-     */
-    private void verificarHoraReservacion(LocalDateTime horaFecha) 
-            throws FacadeException {
-        try{
-        RestauranteDTO restaurante = restauranteBO.consultar();
-        LocalTime horaElegida = horaFecha.toLocalTime();
-        LocalTime horaCierre = restaurante.getHoraCierre();
-        LocalTime horaApertura = restaurante.getHoraApertura();
-
-        if (horaElegida.isAfter(horaCierre)) {
-            throw new FacadeException("La hora de la reservación no puede ser "
-                    + "después del cierre del restaurante");
-        } else if (horaElegida.isBefore(horaApertura)) {
-            throw new FacadeException("La hora de la reservación no puede ser "
-                    + "antes de la apertura del restaurante");
-        }
-        }catch(BOException be){
-            JOptionPane.showMessageDialog(null, be.getMessage());
-        }
-    }
-
-    /**
-     * Verifica si el cliente ya tiene una reservación activa en la misma fecha,
-     * evitando que se dupliquen las reservaciones.
-     *
-     * @param cliente Cliente a verificar.
-     * @throws FacadeException Excepción si el cliente ya tiene reservaciones.
-     */
-    private void verificarReservacionesCliente(ClienteDTO cliente) 
-            throws FacadeException {
+    private void validarDisponibilidadMesa(MesaDTO mesa, LocalDateTime horaFecha) throws FacadeException {
         try {
-            boolean resultado = reservaBO.verificarReservaciones(cliente);
-            if (resultado) {
-                throw new FacadeException("El cliente ya tiene reservaciones "
-                        + "activas en esta fecha");
+            if (!reservaBO.verificarPorDia(mesa, horaFecha)) {
+                String mensaje = String.format("Mesa %s no disponible para la fecha y hora seleccionada", mesa.getCodigoMesa());
+                System.err.println(mensaje);
+                throw new FacadeException(mensaje);
             }
-        } catch (BOException be) {
-            throw new FacadeException(be.getMessage());
+        } catch (BOException e) {
+            System.err.println("Error al verificar disponibilidad: " + e.getMessage());
+            throw new FacadeException("Error al verificar disponibilidad: " + e.getMessage());
         }
     }
 
-    /**
-     * Verifica si la mesa está disponible en la fecha y hora deseada.
-     *
-     * @param mesa Mesa a verificar.
-     * @param horaFecha Fecha y hora de la reserva.
-     * @throws FacadeException Excepción si la mesa no está disponible.
-     */
-    private void verificarDisponibilidad(MesaDTO mesa, 
-            LocalDateTime horaFecha) throws FacadeException {
+    private void procesarReserva(ClienteDTO cliente, MesaDTO mesa, LocalDateTime horaFecha,
+                                  int numPersonas, double costo) throws FacadeException {
         try {
-            boolean resultado = reservaBO.verificarPorDia(mesa, horaFecha);
-            if (!resultado) {
-                throw new FacadeException("La mesa no está disponible "
-                        + "en la hora especificada");
-            }
-        } catch (BOException be) {
-            throw new FacadeException(be.getMessage());
-        }
-    }
-
-    /**
-     * Realiza la reserva si pasa todas las verificaciones. Presenta una
-     * confirmación antes de completar el proceso.
-     *
-     * @param cliente Cliente que hace la reserva.
-     * @param mesa Mesa a reservar.
-     * @param horaFecha Fecha y hora de la reserva.
-     * @param numPersonas Número de personas en la reserva.
-     * @param costo Costo de la reserva.
-     * @throws FacadeException Excepción en caso de error en la reserva.
-     */
-    private void hacerReserva(ClienteDTO cliente, MesaDTO mesa, 
-            LocalDateTime horaFecha, int numPersonas, double costo) 
-            throws FacadeException {
-        try {
-            int respuesta = JOptionPane.showConfirmDialog(null, 
-                    "¿Está seguro de que desea agregar la reservación?", 
-                    "Agregar reservación", JOptionPane.YES_NO_OPTION);
-
-            if (respuesta == JOptionPane.YES_OPTION) {
+            if (confirmarReserva(horaFecha, numPersonas)) {
                 RestauranteDTO restaurante = restauranteBO.consultar();
-                ReservaDTO reserva = new ReservaDTO(horaFecha, numPersonas, costo, 
-                        "ACTIVA", cliente, mesa, restaurante);
+                ReservaDTO reserva = new ReservaDTO(horaFecha, numPersonas, costo, "ACTIVA", cliente, mesa, restaurante);
+
+                System.out.println("Registrando la reserva en el sistema...");
                 reservaBO.agregarReserva(reserva);
-                JOptionPane.showMessageDialog(null, "Reservación agregada "
-                        + "con éxito");
+                mostrarMensajeExito();
             }
-        } catch (BOException be) {
-            throw new FacadeException(be.getMessage());
+        } catch (BOException e) {
+            System.err.println("Error al procesar la reserva: " + e.getMessage());
+            throw new FacadeException("Error al procesar la reserva: " + e.getMessage());
         }
     }
 
-    /**
-     * Cancela una reserva.
-     *
-     * @param reserva Reserva a cancelar.
-     * @throws FacadeException Excepción si la cancelación no es posible.
-     */
+    private boolean confirmarReserva(LocalDateTime horaFecha, int numPersonas) {
+        System.out.println("Solicitando confirmación del usuario para la reserva...");
+        return JOptionPane.showConfirmDialog(null,
+                String.format("¿Confirmar reserva para %d personas el %s?",
+                        numPersonas, horaFecha.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))),
+                "Confirmar Reservación",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+    }
+
+    private void mostrarMensajeExito() {
+        System.out.println("Reservación registrada exitosamente.");
+        JOptionPane.showMessageDialog(null, "Reservación registrada exitosamente");
+    }
+
     @Override
     public void cancelarReserva(ReservaDTO reserva) throws FacadeException {
+        System.out.println("Iniciando proceso de cancelación de reserva...");
         try {
-            if (reserva.getEstado().equalsIgnoreCase("CANCELADA")) {
-                throw new FacadeException("La reserva ya se encuentra "
-                        + "cancelada");
-            }
+            validarReservaCancelable(reserva);
 
-            LocalDateTime hoy = LocalDateTime.now();
-            if (reserva.getFechaHoraReserva().isBefore(hoy)) {
-                throw new FacadeException("La reserva ya ha pasado, no puede "
-                        + "ser cancelada");
-            }
-
-            int respuesta = JOptionPane.showConfirmDialog(null, 
-                    "¿Está seguro de que desea cancelar la reservación? " , 
-                    "Cancelar reservación", JOptionPane.YES_NO_OPTION);
-
-            if (respuesta == JOptionPane.YES_OPTION) {
+            if (confirmarCancelacion()) {
+                System.out.println("Actualizando estado de la reserva a 'CANCELADA'...");
                 reserva.setEstado("CANCELADA");
-                JOptionPane.showMessageDialog(null, "Reservación cancelada"
-                        + " con éxito");
                 reservaBO.actualizarReserva(reserva);
+                mostrarMensajeCancelacionExitosa();
             }
-        } catch (BOException be) {
-            throw new FacadeException(be.getMessage());
+        } catch (BOException e) {
+            System.err.println("Error al cancelar la reserva: " + e.getMessage());
+            throw new FacadeException("Error al cancelar la reserva: " + e.getMessage());
         }
     }
 
+    private void validarReservaCancelable(ReservaDTO reserva) throws FacadeException {
+        Objects.requireNonNull(reserva, "La reserva no puede ser nula");
 
+        if ("CANCELADA".equalsIgnoreCase(reserva.getEstado())) {
+            System.err.println("Error: La reserva ya está cancelada");
+            throw new FacadeException("La reserva ya está cancelada");
+        }
+        if (reserva.getFechaHoraReserva().isBefore(LocalDateTime.now())) {
+            System.err.println("Error: No se pueden cancelar reservas pasadas");
+            throw new FacadeException("No se pueden cancelar reservas pasadas");
+        }
+    }
+
+    private boolean confirmarCancelacion() {
+        System.out.println("Solicitando confirmación del usuario para la cancelación...");
+        return JOptionPane.showConfirmDialog(null,
+                "¿Está seguro de que desea cancelar la reservación?",
+                "Cancelar Reservación",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+    }
+
+    private void mostrarMensajeCancelacionExitosa() {
+        System.out.println("Reservación cancelada exitosamente.");
+        JOptionPane.showMessageDialog(null, "Reservación cancelada exitosamente");
+    }
 }
-

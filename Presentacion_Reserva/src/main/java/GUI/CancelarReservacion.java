@@ -11,6 +11,7 @@ import Excepciones.FacadeException;
 import Fachada.ReservaFCD;
 import Interfaces.IReservaBO;
 import interfacesFachada.IReservaFCD;
+import java.awt.Color;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -98,7 +99,7 @@ public class CancelarReservacion extends javax.swing.JFrame {
     /**
      * Carga las reservas en la tabla de visualización.
      */
-    public void cargarTablaReservas() {
+    private void cargarTablaReservas() {
         List<ReservaDTO> reservaciones = this.reservas;
         String[] columnNames = {"Fecha", "Hora", "Personas", "Costo", "Estado", "Cliente", "Mesa"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
@@ -118,8 +119,17 @@ public class CancelarReservacion extends javax.swing.JFrame {
         }
 
         tblReservas.setModel(model);
-    }
 
+        // Cambiar el color del texto a blanco
+        tblReservas.setForeground(Color.WHITE);
+
+        // Cambiar el color de fondo de la tabla
+        tblReservas.setBackground(new java.awt.Color(12, 11, 29));
+
+        // Cambiar el color de fondo del encabezado de la tabla
+        tblReservas.getTableHeader().setBackground(new java.awt.Color(12, 11, 29));
+        tblReservas.getTableHeader().setForeground(new java.awt.Color(12, 11, 29));
+    }
     /**
      * Forma la fecha de inicio para la búsqueda a partir del componente de
      * selección de fecha.
@@ -179,7 +189,7 @@ public class CancelarReservacion extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         panelGlowingGradient1 = new Control.PanelGlowingGradient();
         jLabel5 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
         tblReservas = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -305,6 +315,7 @@ public class CancelarReservacion extends javax.swing.JFrame {
         jLabel5.setBounds(220, 30, 160, 32);
 
         tblReservas.setBackground(new java.awt.Color(12, 11, 29));
+        tblReservas.setForeground(new java.awt.Color(255, 255, 255));
         tblReservas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -316,10 +327,15 @@ public class CancelarReservacion extends javax.swing.JFrame {
                 "No.Mesa", "Tamaño de mesa", "Disponibilidad", "Lugar"
             }
         ));
-        jScrollPane1.setViewportView(tblReservas);
+        tblReservas.setGridColor(new java.awt.Color(201, 60, 32));
+        jScrollPane2.setViewportView(tblReservas);
+        if (tblReservas.getColumnModel().getColumnCount() > 0) {
+            tblReservas.getColumnModel().getColumn(0).setPreferredWidth(25);
+            tblReservas.getColumnModel().getColumn(3).setPreferredWidth(40);
+        }
 
-        panelGlowingGradient1.add(jScrollPane1);
-        jScrollPane1.setBounds(40, 80, 520, 490);
+        panelGlowingGradient1.add(jScrollPane2);
+        jScrollPane2.setBounds(30, 80, 540, 490);
 
         Fondo.add(panelGlowingGradient1, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 80, 600, 600));
 
@@ -400,20 +416,19 @@ public class CancelarReservacion extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, fe.getMessage());
         } catch (BOException be) {
             JOptionPane.showMessageDialog(this, be.getMessage());
-        } 
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         this.txfNombre.setText("");
-        
+
         //refrescamos la tabla de reservaciones a su primer estado.
-        try{
+        try {
             this.reservas = reservaBO.obtenerReservas();
-        }
-        catch(BOException be){
+        } catch (BOException be) {
             JOptionPane.showMessageDialog(this, be.getMessage());
         }
-        
+
         //ahora si recargamos la tabla.
         cargarTablaReservas();
     }//GEN-LAST:event_btnLimpiarActionPerformed
@@ -430,7 +445,7 @@ public class CancelarReservacion extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private Control.PanelGlowingGradient panelGlowingGradient1;
     private javax.swing.JButton regresarBtn;
