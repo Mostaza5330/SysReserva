@@ -27,7 +27,7 @@ CREATE TABLE mesas (
 CREATE TABLE clientes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,                
     nombre VARCHAR(255) NOT NULL,                        
-    telefono VARCHAR(15) NOT NULL UNIQUE                 
+    telefono VARCHAR(255) NOT NULL UNIQUE                 
 );
 
 -- Tabla de reservas
