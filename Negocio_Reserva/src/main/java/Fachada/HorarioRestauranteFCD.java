@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
  * Clase fachada para gestionar el horario de apertura y cierre de un
  * restaurante utilizando LocalTime para operaciones internas.
  *
- * @autor Sebastian Murrieta Verduzco - 233463
+ * @author Sebastian Murrieta Verduzco - 233463
  */
 public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
 
@@ -22,11 +22,11 @@ public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
 
     /**
      * Obtiene una lista de horarios disponibles en intervalos de 30 minutos
-     * entre la hora de apertura y cierre.
+     * entre la hora de apertura y cierre de un restaurante.
      *
-     * @param restaurante el DTO del restaurante
-     * @return List<String> con los horarios disponibles en formato "hh:mm a"
-     * @throws IllegalStateException si no hay horarios establecidos
+     * @param restaurante el DTO del restaurante que contiene las horas de apertura y cierre
+     * @return una lista de horarios disponibles formateados en "hh:mm a"
+     * @throws IllegalStateException si no hay horarios establecidos en el restaurante
      */
     public List<String> obtenerHorariosDisponibles(RestauranteDTO restaurante)
             throws IllegalStateException {
@@ -53,6 +53,13 @@ public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
         return horariosDisponibles;
     }
 
+    /**
+     * Establece la hora de apertura para un restaurante.
+     *
+     * @param restaurante el DTO del restaurante al que se asignará la hora de apertura
+     * @param horaApertura la hora de apertura a establecer
+     * @throws IllegalArgumentException si la hora de apertura es nula
+     */
     @Override
     public void establecerHoraApertura(RestauranteDTO restaurante, LocalTime horaApertura)
             throws IllegalArgumentException {
@@ -70,6 +77,13 @@ public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
         }
     }
 
+    /**
+     * Establece la hora de cierre para un restaurante.
+     *
+     * @param restaurante el DTO del restaurante al que se asignará la hora de cierre
+     * @param horaCierre la hora de cierre a establecer
+     * @throws IllegalArgumentException si la hora de cierre es nula o no es válida
+     */
     @Override
     public void establecerHoraCierre(RestauranteDTO restaurante, LocalTime horaCierre)
             throws IllegalArgumentException {
@@ -99,7 +113,7 @@ public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
      *
      * @param restaurante el restaurante que se está verificando
      * @param horaCierre la hora de cierre a validar
-     * @return true si la hora de cierre es válida; false en caso contrario
+     * @return true si la hora de cierre es posterior a la hora de apertura; false en caso contrario
      */
     private boolean isHoraCierreValida(RestauranteDTO restaurante, LocalTime horaCierre) {
         LocalTime horaApertura = restaurante.getHoraApertura();
@@ -107,10 +121,10 @@ public class HorarioRestauranteFCD implements IHorarioRestauranteFCD {
     }
 
     /**
-     * Convierte LocalTime a String para mostrar en la interfaz de usuario.
-     * 
+     * Convierte un objeto LocalTime a un formato de texto para mostrar en la interfaz de usuario.
+     *
      * @param time la hora a convertir
-     * @return String formateado para mostrar
+     * @return una cadena formateada de la hora en "hh:mm a" o una cadena vacía si la hora es nula
      */
     public String formatearHoraParaMostrar(LocalTime time) {
         if (time == null) {

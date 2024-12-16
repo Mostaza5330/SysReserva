@@ -2,6 +2,7 @@ package GUI;
 
 import BO.ClienteBO;
 import DTOs.ClienteDTO;
+import Excepciones.BOException;
 import Excepciones.NegocioException;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -51,21 +52,19 @@ public class Admistrador extends javax.swing.JFrame {
      */
     private List<ClienteDTO> generarClientesAleatorios(int cantidad) {
         List<ClienteDTO> clientesGenerados = new ArrayList<>();
-
         for (int i = 0; i < cantidad; i++) {
             ClienteDTO cliente = new ClienteDTO();
-
-            // Generar datos aleatorios para el cliente
-            // Use current time + counter to create unique IDs
             cliente.setId(String.valueOf(System.currentTimeMillis() + i));
-
-            // Generate more realistic names
             cliente.setNombre(generarNombreAleatorio());
-            cliente.setTelefono(generarTelefonoAleatorio());
+
+            String telefonoOriginal = generarTelefonoAleatorio();
+            cliente.setTelefono(telefonoOriginal);
+
+            // Add debug print to show original and encrypted phone number
+            System.out.println("Teléfono original: " + telefonoOriginal);
 
             clientesGenerados.add(cliente);
         }
-
         return clientesGenerados;
     }
 
@@ -498,8 +497,8 @@ public class Admistrador extends javax.swing.JFrame {
             // Generar una lista de 20 clientes aleatorios
             List<ClienteDTO> clientesGenerados = generarClientesAleatorios(20);
 
-            // Llamar al método de negocio (o al DAO directamente) para insertar los clientes
-            clientesBO.insercionMasivaClientes(clientesGenerados); // Inserción sin cifrado aquí
+            // Llamar al método de negocio para insertar los clientes
+            clientesBO.insercionMasivaClientes(clientesGenerados);
 
             // Mostrar mensaje de éxito al usuario
             JOptionPane.showMessageDialog(this,
@@ -507,15 +506,28 @@ public class Admistrador extends javax.swing.JFrame {
                     "Inserción Exitosa",
                     JOptionPane.INFORMATION_MESSAGE);
 
+            // Verificar la recuperación de los clientes
+            try {
+                List<ClienteDTO> clientesRecuperados = clientesBO.obtenerClientes();
+                System.out.println("Clientes recuperados: " + clientesRecuperados.size());
+
+                for (ClienteDTO cliente : clientesRecuperados) {
+                    System.out.println("Cliente: " + cliente.getNombre()
+                            + ", Teléfono Original: " + cliente.getTelefono());
+                }
+            } catch (BOException ex) {
+                Logger.getLogger(Admistrador.class.getName()).log(Level.WARNING,
+                        "Error al recuperar clientes después de la inserción", ex);
+            }
+
         } catch (NegocioException ex) {
-            // Registrar el error en el logger
             Logger.getLogger(Admistrador.class.getName()).log(Level.SEVERE,
                     "Error al insertar clientes", ex);
 
-            // Mostrar mensaje de error al usuario
             JOptionPane.showMessageDialog(this,
-                    "Error al insertar clientes: " + ex.getMessage(),
-                    "Error",
+                    "No se pudieron insertar los clientes. "
+                    + "Verifique los datos e intente nuevamente.",
+                    "Error de Inserción",
                     JOptionPane.ERROR_MESSAGE);
         }
 

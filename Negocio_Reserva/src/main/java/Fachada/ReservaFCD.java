@@ -14,8 +14,12 @@ import java.util.Objects;
 import javax.swing.JOptionPane;
 
 /**
- * Fachada que maneja las operaciones relacionadas con reservas.
- * Implementa el patrón Facade para simplificar la interfaz del sistema de reservas.
+ * Fachada que maneja las operaciones relacionadas con reservas. Implementa el
+ * patrón Facade para simplificar la interfaz del sistema de reservas. Permite
+ * agregar y cancelar reservas, validando diversos parámetros antes de realizar
+ * las operaciones.
+ *
+ * @author Sebastian Murrieta Verduzco - 233463
  */
 public class ReservaFCD implements IReservaFCD {
 
@@ -26,14 +30,30 @@ public class ReservaFCD implements IReservaFCD {
     private static final int MESES_MAXIMOS = 1;
     private static final int HORAS_MARGEN_CIERRE = 1;
 
+    /**
+     * Constructor de la clase que inicializa los objetos de negocio para
+     * gestionar reservas y restaurante.
+     */
     public ReservaFCD() {
         this.reservaBO = new ReservaBO();
         this.restauranteBO = new RestauranteBO();
     }
 
+    /**
+     * Agrega una nueva reserva después de realizar todas las validaciones
+     * necesarias.
+     *
+     * @param cliente El cliente que realiza la reserva.
+     * @param mesa La mesa que se reserva.
+     * @param horaFecha La fecha y hora en que se solicita la reserva.
+     * @param numPersonas El número de personas para la reserva.
+     * @param costo El costo de la reserva.
+     * @throws FacadeException Si ocurre un error durante el proceso de
+     * validación o agregación.
+     */
     @Override
     public void agregarReserva(ClienteDTO cliente, MesaDTO mesa, LocalDateTime horaFecha,
-                                int numPersonas, double costo) throws FacadeException {
+            int numPersonas, double costo) throws FacadeException {
         System.out.println("Iniciando proceso de agregar reserva...");
         validarParametrosNoNulos(cliente, mesa, horaFecha);
 
@@ -64,6 +84,14 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Valida que los parámetros necesarios para la reserva no sean nulos.
+     *
+     * @param cliente El cliente que realiza la reserva.
+     * @param mesa La mesa que se reserva.
+     * @param horaFecha La fecha y hora de la reserva.
+     * @throws FacadeException Si alguno de los parámetros es nulo.
+     */
     private void validarParametrosNoNulos(ClienteDTO cliente, MesaDTO mesa, LocalDateTime horaFecha) throws FacadeException {
         if (cliente == null || mesa == null || horaFecha == null) {
             System.err.println("Error: Los datos de la reserva no pueden ser nulos");
@@ -71,6 +99,12 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Valida si el cliente ya tiene una reserva activa.
+     *
+     * @param cliente El cliente a verificar.
+     * @throws FacadeException Si el cliente ya tiene una reserva activa.
+     */
     private void validarReservacionesExistentes(ClienteDTO cliente) throws FacadeException {
         try {
             if (reservaBO.verificarReservaciones(cliente)) {
@@ -83,6 +117,14 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Valida el tiempo de anticipación de la reserva. Las reservas deben ser
+     * realizadas con al menos 24 horas de anticipación y no más de 1 mes.
+     *
+     * @param horaFecha La fecha y hora de la reserva.
+     * @throws FacadeException Si el tiempo de la reserva no está dentro de los
+     * límites permitidos.
+     */
     private void validarTiempoReservacion(LocalDateTime horaFecha) throws FacadeException {
         LocalDateTime ahora = LocalDateTime.now();
         LocalDateTime limiteMinimo = ahora.plusHours(HORAS_ANTICIPACION);
@@ -100,6 +142,14 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Valida que la reserva esté dentro del horario de operación del
+     * restaurante.
+     *
+     * @param horaFecha La fecha y hora de la reserva.
+     * @throws FacadeException Si la hora de la reserva está fuera del horario
+     * permitido.
+     */
     private void validarHorarioRestaurante(LocalDateTime horaFecha) throws FacadeException {
         try {
             RestauranteDTO restaurante = restauranteBO.consultar();
@@ -107,8 +157,8 @@ public class ReservaFCD implements IReservaFCD {
             LocalTime horaCierreEfectivo = restaurante.getHoraCierre().minusHours(HORAS_MARGEN_CIERRE);
 
             if (horaElegida.isAfter(horaCierreEfectivo)) {
-                String mensaje = "La última reservación debe ser " + HORAS_MARGEN_CIERRE +
-                        " hora antes del cierre (" + restaurante.getHoraCierre() + ")";
+                String mensaje = "La última reservación debe ser " + HORAS_MARGEN_CIERRE
+                        + " hora antes del cierre (" + restaurante.getHoraCierre() + ")";
                 System.err.println(mensaje);
                 throw new FacadeException(mensaje);
             }
@@ -123,6 +173,14 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Valida la capacidad de la mesa para la cantidad de personas solicitada.
+     *
+     * @param mesa La mesa que se quiere reservar.
+     * @param numPersonas El número de personas para la reserva.
+     * @throws FacadeException Si el número de personas no es compatible con la
+     * capacidad de la mesa.
+     */
     private void validarCapacidadMesa(MesaDTO mesa, int numPersonas) throws FacadeException {
         if (numPersonas <= 0) {
             System.err.println("Error: El número de personas debe ser positivo");
@@ -142,6 +200,14 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Verifica si la mesa está disponible para la fecha y hora de la reserva.
+     *
+     * @param mesa La mesa que se desea reservar.
+     * @param horaFecha La fecha y hora de la reserva.
+     * @throws FacadeException Si la mesa no está disponible para el horario
+     * solicitado.
+     */
     private void validarDisponibilidadMesa(MesaDTO mesa, LocalDateTime horaFecha) throws FacadeException {
         try {
             if (!reservaBO.verificarPorDia(mesa, horaFecha)) {
@@ -155,8 +221,18 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Procesa la reserva una vez que todas las validaciones se han superado.
+     *
+     * @param cliente El cliente que realiza la reserva.
+     * @param mesa La mesa a reservar.
+     * @param horaFecha La fecha y hora de la reserva.
+     * @param numPersonas El número de personas para la reserva.
+     * @param costo El costo de la reserva.
+     * @throws FacadeException Si ocurre un error al procesar la reserva.
+     */
     private void procesarReserva(ClienteDTO cliente, MesaDTO mesa, LocalDateTime horaFecha,
-                                  int numPersonas, double costo) throws FacadeException {
+            int numPersonas, double costo) throws FacadeException {
         try {
             if (confirmarReserva(horaFecha, numPersonas)) {
                 RestauranteDTO restaurante = restauranteBO.consultar();
@@ -172,6 +248,13 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Solicita al usuario la confirmación para realizar la reserva.
+     *
+     * @param horaFecha La fecha y hora de la reserva.
+     * @param numPersonas El número de personas de la reserva.
+     * @return true si el usuario confirma la reserva, false si la cancela.
+     */
     private boolean confirmarReserva(LocalDateTime horaFecha, int numPersonas) {
         System.out.println("Solicitando confirmación del usuario para la reserva...");
         return JOptionPane.showConfirmDialog(null,
@@ -181,11 +264,21 @@ public class ReservaFCD implements IReservaFCD {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
+    /**
+     * Muestra un mensaje indicando que la reserva ha sido registrada
+     * exitosamente.
+     */
     private void mostrarMensajeExito() {
         System.out.println("Reservación registrada exitosamente.");
         JOptionPane.showMessageDialog(null, "Reservación registrada exitosamente");
     }
 
+    /**
+     * Cancela una reserva previamente realizada.
+     *
+     * @param reserva La reserva a cancelar.
+     * @throws FacadeException Si ocurre un error durante la cancelación.
+     */
     @Override
     public void cancelarReserva(ReservaDTO reserva) throws FacadeException {
         System.out.println("Iniciando proceso de cancelación de reserva...");
@@ -204,6 +297,12 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Valida si una reserva puede ser cancelada.
+     *
+     * @param reserva La reserva a verificar.
+     * @throws FacadeException Si la reserva no puede ser cancelada.
+     */
     private void validarReservaCancelable(ReservaDTO reserva) throws FacadeException {
         Objects.requireNonNull(reserva, "La reserva no puede ser nula");
 
@@ -217,6 +316,11 @@ public class ReservaFCD implements IReservaFCD {
         }
     }
 
+    /**
+     * Solicita al usuario la confirmación para cancelar la reserva.
+     *
+     * @return true si el usuario confirma la cancelación, false si la cancela.
+     */
     private boolean confirmarCancelacion() {
         System.out.println("Solicitando confirmación del usuario para la cancelación...");
         return JOptionPane.showConfirmDialog(null,
@@ -225,6 +329,10 @@ public class ReservaFCD implements IReservaFCD {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
+    /**
+     * Muestra un mensaje indicando que la cancelación de la reserva fue
+     * exitosa.
+     */
     private void mostrarMensajeCancelacionExitosa() {
         System.out.println("Reservación cancelada exitosamente.");
         JOptionPane.showMessageDialog(null, "Reservación cancelada exitosamente");

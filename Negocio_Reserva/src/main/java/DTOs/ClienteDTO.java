@@ -13,8 +13,7 @@ import java.util.List;
  * Este DTO se utiliza en escenarios donde se necesita encapsular y transportar 
  * los datos del cliente sin exponer la entidad de la base de datos directamente.
  *
- * @author skevi
- * @author sebastian
+ * @author Sebastian Murrieta Verduzco - 233463
  */
 public class ClienteDTO {
 
@@ -46,6 +45,8 @@ public class ClienteDTO {
         this.reservas = new ArrayList<>(); // Inicializa la lista de reservas vacía
     }
 
+    
+    
     /**
      * Constructor que inicializa el nombre y el teléfono del cliente.
      * 

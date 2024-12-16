@@ -1,5 +1,6 @@
 package BO;
 
+import DAO.DesEncryptionUtil;
 import DTOs.ClienteDTO;
 import Excepciones.NegocioException;
 import Interfaces.IClienteBO;
@@ -46,9 +47,19 @@ public class ClienteBO implements IClienteBO {
 
     public void insercionMasivaClientes(List<ClienteDTO> clientes) throws NegocioException {
         try {
-            // Convert ClienteDTO to Cliente entities
+            // Convert ClienteDTO to Cliente entities with phone encryption
             List<Cliente> clientesEntidad = new ArrayList<>();
             for (ClienteDTO clienteDTO : clientes) {
+                // Encrypt phone number before converting to entity
+                String telefonoCifrado = DesEncryptionUtil.cifrarTelefono(
+                        clienteDTO.getTelefono(),
+                        "sebas123" // Use the same key as in ClienteDAO
+                );
+
+                // Update DTO with encrypted phone number
+                clienteDTO.setTelefono(telefonoCifrado);
+
+                // Convert to entity
                 Cliente cliente = clienteCVR.toEntity(clienteDTO);
                 clientesEntidad.add(cliente);
             }
@@ -57,12 +68,17 @@ public class ClienteBO implements IClienteBO {
             clienteDAO.insercionMasivaClientes(clientesEntidad);
 
             LOG.log(Level.INFO, "Inserción masiva de clientes exitosa");
-        } catch (ConversionException ex) {
-            LOG.log(Level.SEVERE, "Error en la conversión de DTO a Entidad", ex);
-            throw new NegocioException("Error al convertir clientes para inserción masiva");
-        } catch (DAOException de) {
-            LOG.log(Level.SEVERE, "Error en la inserción masiva de clientes", de);
-            throw new NegocioException("Error al insertar clientes masivamente");
+        } catch (Exception ex) {
+            if (ex instanceof ConversionException) {
+                LOG.log(Level.SEVERE, "Error en la conversión de DTO a Entidad", ex);
+                throw new NegocioException("Error al convertir clientes para inserción masiva");
+            } else if (ex instanceof DAOException) {
+                LOG.log(Level.SEVERE, "Error en la inserción masiva de clientes", ex);
+                throw new NegocioException("Error al insertar clientes masivamente");
+            } else {
+                LOG.log(Level.SEVERE, "Error al cifrar teléfono", ex);
+                throw new NegocioException("Error al cifrar número de teléfono");
+            }
         }
     }
 
@@ -82,25 +98,26 @@ public class ClienteBO implements IClienteBO {
         try {
             // Obtener el cliente desde el DAO
             Cliente cliente = clienteDAO.obtenerCliente(id);
+
+            // Descifrar el teléfono si está cifrado
+            if (cliente.getTelefono() != null) {
+                String telefonoDescifrado = DesEncryptionUtil.descifrarTelefono(
+                        cliente.getTelefono(),
+                        "sebas123"
+                );
+                cliente.setTelefono(telefonoDescifrado);
+            }
+
             // Convertir el cliente en una instancia DTO
             ClienteDTO clienteDTO = clienteCVR.toDTO(cliente);
 
-            // Registrar un mensaje de éxito en el log
             LOG.log(Level.INFO, "Éxito al obtener al cliente por ID en BO");
 
             return clienteDTO;
-        } catch (DAOException de) {
-
-            // Registrar un error en el log si hay un problema en la capa DAO
-            LOG.log(Level.SEVERE, "Error al obtener el cliente por ID en BO", de);
-            throw new BOException(de.getMessage());  // Re-lanzar como BOException
-
-        } catch (ConversionException ce) {
-
-            // Registrar un error si falla la conversión de entidad a DTO
-            LOG.log(Level.SEVERE, "Error en la conversión al obtener el cliente por ID", ce);
+        } catch (Exception e) {
+            // Handle potential decryption or conversion errors
+            LOG.log(Level.SEVERE, "Error al obtener o descifrar el cliente", e);
             throw new BOException("Error al obtener el cliente por ID");
-
         }
     }
 
@@ -116,31 +133,39 @@ public class ClienteBO implements IClienteBO {
     @Override
     public List<ClienteDTO> obtenerClientes() throws BOException {
         try {
-            // Obtener la lista de entidades Cliente desde el DAO
             List<Cliente> entidades = clienteDAO.obtenerClientes();
-
             List<ClienteDTO> dto = new ArrayList<>();
 
-            // Convertir cada entidad Cliente a DTO
             for (Cliente cliente : entidades) {
-                dto.add(clienteCVR.toDTO(cliente));
+                try {
+                    // Verificación adicional antes de descifrar
+                    if (cliente.getTelefono() != null && !cliente.getTelefono().isEmpty()) {
+                        String telefonoDescifrado = DesEncryptionUtil.descifrarTelefono(
+                                cliente.getTelefono(),
+                                "sebas123"
+                        );
+                        cliente.setTelefono(telefonoDescifrado);
+                    }
+                    dto.add(clienteCVR.toDTO(cliente));
+                } catch (Exception ex) {
+                    // Log detallado
+                    LOG.log(Level.SEVERE,
+                            "Error al procesar cliente: "
+                            + (cliente != null ? cliente.getNombre() : "Cliente nulo"),
+                            ex
+                    );
+                    // Opcional: mantener el cliente original sin descifrar
+                    // dto.add(clienteCVR.toDTO(cliente));
+                }
             }
 
-            return dto; // Retornar la lista de clientes en formato DTO
-
+            return dto;
         } catch (DAOException de) {
-
-            // Registrar un error si ocurre un problema en la capa DAO
             LOG.log(Level.SEVERE, "Error al obtener los clientes en BO", de);
-            throw new BOException(de.getMessage());
-
-        } catch (ConversionException ce) {
-
-            // Registrar un error si falla la conversión de entidad a DTO
-            LOG.log(Level.SEVERE, "Error en la conversión al obtener los clientes", ce);
-            throw new BOException("Error al obtener los clientes");
-
+            throw new BOException("Error al obtener los clientes", de);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error inesperado al obtener los clientes", ex);
+            throw new BOException("Error inesperado al obtener los clientes", ex);
         }
-
     }
 }

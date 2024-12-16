@@ -1,9 +1,7 @@
 package DAO;
 
-import Cifrado.DesEncryptionUtil;
 import Conexion.Conexion;
 import Entidades.Cliente;
-import static Entidades.Reserva_.cliente;
 import Excepciones.ConexionException;
 import Excepciones.DAOException;
 import Interfaces.IClienteDAO;
@@ -12,28 +10,42 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 
 /**
- * Clase de acceso a datos para la entidad de Cliente.
+ * Clase de acceso a datos (DAO) para gestionar operaciones CRUD relacionadas
+ * con la entidad {@link Cliente}. Implementa la interfaz {@link IClienteDAO}.
+ *
+ * Proporciona métodos para insertar, recuperar y listar clientes, incluyendo la
+ * capacidad de cifrar y descifrar los números de teléfono para mayor seguridad.
  *
  * @author Sebastian Murrieta Verduzco - 233463
  */
 public class ClienteDAO implements IClienteDAO {
 
     private static final Logger LOG = Logger.getLogger(ClienteDAO.class.getName());
-    Conexion conexion;
+    private Conexion conexion;
 
+    // Leer contraseña desde variable de entorno o archivo de configuración
+    private static final String CLAVE_ENCRYPTION = System.getenv()
+            .getOrDefault("ENCRYPTION_KEY", "sebas123");
+
+    /**
+     * Constructor por defecto que inicializa la conexión con la base de datos.
+     */
     public ClienteDAO() {
         this.conexion = new Conexion();
     }
 
-    private static final String CLAVE_DES = "sebas123";  // Clave para DES (8 caracteres)
-
     /**
-     * Inserta masivamente una lista de clientes en la base de datos.
+     * Inserta una lista de clientes en la base de datos de manera masiva. Cada
+     * cliente es procesado individualmente, permitiendo continuar con la
+     * operación incluso si ocurre un error con algún cliente específico.
      *
-     * @param clientes Lista de clientes a insertar.
-     * @throws DAOException En caso de error durante la inserción.
+     * Se realiza un cifrado del número de teléfono antes de almacenarlo.
+     *
+     * @param clientes Lista de clientes a insertar en la base de datos.
+     * @throws DAOException Si ocurre un error durante la inserción masiva.
      */
     @Override
     public void insercionMasivaClientes(List<Cliente> clientes) throws DAOException {
@@ -43,32 +55,37 @@ public class ClienteDAO implements IClienteDAO {
             em.getTransaction().begin();
 
             for (Cliente cliente : clientes) {
-                // Cifrar el teléfono antes de guardar en la base de datos
-                String telefonoCifrado = DesEncryptionUtil.cifrarTelefono(cliente.getTelefono(), CLAVE_DES);
-                cliente.setTelefono(telefonoCifrado); // Almacenar el teléfono cifrado en el objeto cliente
-                em.persist(cliente); // Inserta cada cliente
+                try {
+                    // Validaciones previas
+                    if (cliente == null) {
+                        LOG.warning("Intento de insertar cliente nulo");
+                        continue;
+                    }
+
+                    // Cifrar teléfono solo si no está vacío
+                    if (cliente.getTelefono() != null && !cliente.getTelefono().trim().isEmpty()) {
+                        String telefonoCifrado = DesEncryptionUtil.cifrarTelefono(
+                                cliente.getTelefono(),
+                                CLAVE_ENCRYPTION
+                        );
+                        cliente.setTelefono(telefonoCifrado);
+                    }
+
+                    em.persist(cliente);
+                } catch (Exception e) {
+                    LOG.log(Level.SEVERE, "Error al procesar cliente individual", e);
+                    // Continuar con el siguiente cliente en caso de error
+                }
             }
 
             em.getTransaction().commit();
             LOG.info("Inserción masiva de clientes completada exitosamente.");
-        } catch (PersistenceException pe) {
+        } catch (PersistenceException | ConexionException e) {
             if (em != null && em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            LOG.log(Level.SEVERE, "Error en la inserción masiva de clientes - PersistenceException", pe);
-            throw new DAOException("Error en la inserción masiva de clientes", pe);
-        } catch (ConexionException ce) {
-            if (em != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            LOG.log(Level.SEVERE, "Error en la inserción masiva de clientes - ConexionException", ce);
-            throw new DAOException("Error en la conexión", ce);
-        } catch (Exception e) {
-            if (em != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            LOG.log(Level.SEVERE, "Error en la inserción masiva de clientes - Exception", e);
-            throw new DAOException("Error inesperado en la inserción de clientes", e);
+            LOG.log(Level.SEVERE, "Error en la inserción masiva de clientes", e);
+            throw new DAOException("Error en la inserción masiva de clientes", e);
         } finally {
             if (em != null) {
                 em.close();
@@ -77,67 +94,86 @@ public class ClienteDAO implements IClienteDAO {
     }
 
     /**
-     * Obtiene un cliente en especifico de la base de datos.
+     * Recupera un cliente específico de la base de datos utilizando su ID. Si
+     * el cliente tiene un número de teléfono cifrado, este se descifra antes de
+     * devolverlo.
      *
-     * @param id Id del cliente a obtener.
-     * @return Cliente obtenido o null si no se encuentra.
+     * @param id Identificador único del cliente a recuperar.
+     * @return Una instancia de {@link Cliente} si se encuentra el cliente, o
+     * {@code null} si no existe.
+     * @throws DAOException Si ocurre un error al intentar recuperar el cliente.
      */
     @Override
     public Cliente obtenerCliente(Long id) throws DAOException {
         EntityManager em = null;
-        Cliente cliente = null;
         try {
             em = conexion.getEntityManager();
-            cliente = em.find(Cliente.class, id);
-            if (cliente != null) {
-                LOG.info("Cliente obtenido exitosamente.");
-            } else {
-                LOG.warning("Cliente no encontrado.");
+            Cliente cliente = em.find(Cliente.class, id);
+
+            // Descifrar teléfono si existe
+            if (cliente != null && cliente.getTelefono() != null) {
+                try {
+                    String telefonoDescifrado = DesEncryptionUtil.descifrarTelefono(
+                            cliente.getTelefono(),
+                            CLAVE_ENCRYPTION
+                    );
+                    cliente.setTelefono(telefonoDescifrado);
+                } catch (Exception e) {
+                    LOG.log(Level.WARNING, "No se pudo descifrar el teléfono", e);
+                }
             }
-        } catch (PersistenceException pe) {
-            LOG.log(Level.SEVERE, "Error al obtener el cliente - PersistenceException", pe);
-            throw new DAOException("Error al obtener el cliente", pe);
-        } catch (ConexionException ce) {
-            LOG.log(Level.SEVERE, "Error al obtener el cliente - ConexionException", ce);
-            throw new DAOException("Error en la conexión", ce);
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error al obtener el cliente - Exception", e);
-            throw new DAOException("Error inesperado al obtener el cliente", e);
+
+            return cliente;
+        } catch (PersistenceException | ConexionException e) {
+            LOG.log(Level.SEVERE, "Error al obtener el cliente", e);
+            throw new DAOException("Error al obtener el cliente", e);
         } finally {
             if (em != null) {
                 em.close();
             }
         }
-        return cliente;
     }
 
     /**
-     * Obtiene una lista de todos los clientes en la base de datos.
+     * Recupera todos los clientes almacenados en la base de datos. Los números
+     * de teléfono de los clientes se descifran antes de devolver la lista.
      *
-     * @return Lista de todos los clientes.
+     * @return Una lista de clientes ({@link Cliente}) existentes en la base de
+     * datos. Si no hay clientes, devuelve una lista vacía.
+     * @throws DAOException Si ocurre un error al intentar recuperar los
+     * clientes.
      */
     @Override
     public List<Cliente> obtenerClientes() throws DAOException {
         EntityManager em = null;
-        List<Cliente> clientes = null;
         try {
             em = conexion.getEntityManager();
-            clientes = em.createQuery("SELECT c FROM Cliente c", Cliente.class).getResultList();
-            LOG.info("Clientes obtenidos exitosamente.");
-        } catch (PersistenceException pe) {
-            LOG.log(Level.SEVERE, "Error al obtener los clientes - PersistenceException", pe);
-            throw new DAOException("Error al obtener a los clientes", pe);
-        } catch (ConexionException ce) {
-            LOG.log(Level.SEVERE, "Error al obtener los clientes - ConexionException", ce);
-            throw new DAOException("Error en la conexión", ce);
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error al obtener los clientes - Exception", e);
-            throw new DAOException("Error inesperado al obtener los clientes", e);
+            TypedQuery<Cliente> query = em.createQuery("SELECT c FROM Cliente c", Cliente.class);
+            List<Cliente> clientes = query.getResultList();
+
+            // Descifrar teléfonos
+            for (Cliente cliente : clientes) {
+                if (cliente.getTelefono() != null) {
+                    try {
+                        String telefonoDescifrado = DesEncryptionUtil.descifrarTelefono(
+                                cliente.getTelefono(),
+                                CLAVE_ENCRYPTION
+                        );
+                        cliente.setTelefono(telefonoDescifrado);
+                    } catch (Exception e) {
+                        LOG.log(Level.WARNING, "No se pudo descifrar un teléfono", e);
+                    }
+                }
+            }
+
+            return clientes;
+        } catch (PersistenceException | ConexionException e) {
+            LOG.log(Level.SEVERE, "Error al obtener los clientes", e);
+            throw new DAOException("Error al obtener los clientes", e);
         } finally {
             if (em != null) {
                 em.close();
             }
         }
-        return clientes;
     }
 }

@@ -17,7 +17,8 @@ import java.util.logging.Logger;
  * Clase intermediaria entre la capa de DAO para la entidad Restaurante que 
  * maneja la lógica de negocio relacionada con los restaurantes.
  * 
- * @autor Sebastian Murrieta Verduzco - 233463
+ * @author Sebastian Murrieta Verduzco - 233463
+ *
  */
 public class RestauranteBO implements IRestauranteBO {
 

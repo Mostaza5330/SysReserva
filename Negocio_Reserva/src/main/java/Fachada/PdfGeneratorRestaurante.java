@@ -17,9 +17,9 @@ import java.util.List;
 import javax.swing.JFileChooser;
 
 /**
- * La clase {@code PdfGeneratorRestaurante} se encarga de generar un documento PDF que
- * contiene un reporte de reservas basado en filtros proporcionados por el
- * usuario. Utiliza la biblioteca iText para la creación del PDF.
+ * La clase {@code PdfGeneratorRestaurante} se encarga de generar un documento
+ * PDF que contiene un reporte de reservas basado en filtros proporcionados por
+ * el usuario. Utiliza la biblioteca iText para la creación del PDF.
  *
  * Esta clase permite a los usuarios seleccionar una ubicación para guardar el
  * archivo PDF y proporciona una interfaz para filtrar reservas por fecha, tipo
@@ -32,6 +32,11 @@ public class PdfGeneratorRestaurante {
     /**
      * Genera un documento PDF desde un formulario con filtros específicos de
      * reservas.
+     *
+     * Este método permite al usuario generar un reporte de reservas filtrado
+     * por fecha, tipo de mesa y ubicación. El usuario selecciona la ubicación
+     * para guardar el archivo PDF. Si el usuario cancela la operación, el
+     * método devuelve {@code false}.
      *
      * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
      * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
@@ -92,6 +97,15 @@ public class PdfGeneratorRestaurante {
         }
     }
 
+    /**
+     * Asegura que el archivo destino tenga la extensión .pdf.
+     *
+     * Si el archivo seleccionado por el usuario no tiene la extensión ".pdf",
+     * este método la añadirá automáticamente.
+     *
+     * @param archivoDestino El archivo seleccionado por el usuario.
+     * @return Un archivo con la extensión ".pdf".
+     */
     private File obtenerArchivoPDF(File archivoDestino) {
         if (!archivoDestino.getName().toLowerCase().endsWith(".pdf")) {
             archivoDestino = new File(archivoDestino.getAbsolutePath()
@@ -100,6 +114,20 @@ public class PdfGeneratorRestaurante {
         return archivoDestino;
     }
 
+    /**
+     * Agrega el título y los filtros aplicados al documento PDF.
+     *
+     * Este método añade al documento un título y los filtros aplicados para
+     * generar el reporte de reservas, incluyendo las fechas de inicio y fin, el
+     * tipo de mesa y la ubicación.
+     *
+     * @param document El documento PDF al que se añadirá el título y los
+     * filtros.
+     * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
+     * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
+     * @param tipoMesa El tipo de mesa a filtrar.
+     * @param ubicacion La ubicación a filtrar.
+     */
     private void agregarTituloYFiltros(Document document, String fechaInicio,
             String fechaFin, String tipoMesa, String ubicacion) {
         document.add(new Paragraph("Reporte de Reservas").setFontSize(20));
@@ -110,6 +138,21 @@ public class PdfGeneratorRestaurante {
         agregarParrafoSiNoVacio(document, "Ubicación: ", ubicacion);
     }
 
+    /**
+     * Crea la tabla de reservas con los datos filtrados y los agrega al
+     * documento.
+     *
+     * Este método crea una tabla con las reservas que cumplen con los criterios
+     * de filtrado y las agrega al documento PDF.
+     *
+     * @param reservas Una lista de objetos {@code ReservaDTO} que contienen la
+     * información de reservas.
+     * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
+     * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
+     * @param tipoMesa El tipo de mesa a filtrar.
+     * @param ubicacion La ubicación a filtrar.
+     * @return Una tabla que contiene las reservas filtradas.
+     */
     private Table crearTablaReservas(List<ReservaDTO> reservas,
             String fechaInicio, String fechaFin, String tipoMesa, String ubicacion) {
         Table table = new Table(5); // Ahora con 6 columnas
@@ -138,7 +181,7 @@ public class PdfGeneratorRestaurante {
     }
 
     /**
-     * Método auxiliar para crear una celda centrada en una tabla PDF.
+     * Crea una celda centrada para una tabla en el documento PDF.
      *
      * @param content El contenido a incluir en la celda.
      * @return Una celda centrada que contiene el contenido proporcionado.
@@ -151,8 +194,11 @@ public class PdfGeneratorRestaurante {
     }
 
     /**
-     * Método auxiliar para agregar un párrafo al documento PDF si el contenido
-     * no está vacío.
+     * Agrega un párrafo al documento PDF si el contenido no está vacío.
+     *
+     * Este método permite agregar un párrafo al documento solo si el contenido
+     * no es nulo o vacío. Es utilizado para agregar filtros aplicados al
+     * reporte.
      *
      * @param document El documento al que se añadirá el párrafo.
      * @param etiqueta La etiqueta que precederá al contenido.
@@ -166,15 +212,19 @@ public class PdfGeneratorRestaurante {
     }
 
     /**
-     * Filtra reservas basadas en los criterios proporcionados.
+     * Filtra las reservas según los criterios proporcionados.
      *
-     * @param reserva El objeto {@code ReservaDTO} a evaluar.
+     * Este método verifica si una reserva cumple con los filtros de fecha, tipo
+     * de mesa y ubicación. Si la reserva cumple con todos los criterios, se
+     * incluye en el reporte PDF.
+     *
+     * @param reserva El objeto {@code ReservaDTO} que se evaluará.
      * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
      * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
      * @param tipoMesa El tipo de mesa a filtrar.
      * @param ubicacion La ubicación a filtrar.
-     * @return {@code true} si la reserva cumple con todos los criterios,
-     * {@code false} de lo contrario.
+     * @return {@code true} si la reserva cumple con los filtros, {@code false}
+     * de lo contrario.
      */
     private boolean filtrarReserva(ReservaDTO reserva, String fechaInicio, String fechaFin, String tipoMesa, String ubicacion) {
         boolean fechaValida = validarFechas(reserva, fechaInicio, fechaFin);
@@ -184,6 +234,19 @@ public class PdfGeneratorRestaurante {
         return fechaValida && tipoMesaValido && ubicacionValida;
     }
 
+    /**
+     * Valida que la fecha de la reserva esté dentro del rango especificado.
+     *
+     * Este método compara la fecha de la reserva con el rango de fechas
+     * proporcionado y retorna {@code true} si la fecha de la reserva se
+     * encuentra dentro del rango.
+     *
+     * @param reserva El objeto {@code ReservaDTO} con la fecha a validar.
+     * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
+     * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
+     * @return {@code true} si la fecha de la reserva está dentro del rango,
+     * {@code false} de lo contrario.
+     */
     private boolean validarFechas(ReservaDTO reserva, String fechaInicio, String fechaFin) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDateTime inicio = LocalDate.parse(fechaInicio, formatter).atStartOfDay();
@@ -191,6 +254,21 @@ public class PdfGeneratorRestaurante {
         return !reserva.getFechaHoraReserva().isBefore(inicio) && !reserva.getFechaHoraReserva().isAfter(fin);
     }
 
+    /**
+     * Calcula el total ganado por las reservas dentro del rango de fechas y
+     * según el tipo de mesa y ubicación.
+     *
+     * Este método suma el costo de las reservas que cumplen con los criterios
+     * de filtrado y retorna el total ganado.
+     *
+     * @param reservas Una lista de objetos {@code ReservaDTO} que contienen la
+     * información de reservas.
+     * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
+     * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
+     * @param tipoMesa El tipo de mesa a filtrar.
+     * @param ubicacion La ubicación a filtrar.
+     * @return El total ganado por las reservas filtradas.
+     */
     private double calcularTotalGanado(List<ReservaDTO> reservas,
             String fechaInicio, String fechaFin, String tipoMesa,
             String ubicacion) {

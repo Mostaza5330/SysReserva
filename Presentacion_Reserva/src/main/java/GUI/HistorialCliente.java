@@ -313,27 +313,20 @@ public class HistorialCliente extends javax.swing.JFrame {
      */
     private void generarPDFBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarPDFBtnActionPerformed
         try {
+            String nombreCliente = tipoMesaTxt.getText().trim(); // Assuming this is now used for client name
+            String telefono = ubicacionTxt.getText().trim(); // Assuming this is now used for phone number
 
-            // Obtener valores de campos de texto
-            String tipoMesa = tipoMesaTxt.getText().trim();
-            String ubicacion = ubicacionTxt.getText().trim();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String fechaInicio = dateFormat.format(fechaInicioDC.getDate());
-            String fechaFin = dateFormat.format(fechaFinDC.getDate());
-            
+            // Get reservations for this specific client
+            List<ReservaDTO> reservasCliente = obtenerReservas();
 
-            // Obtener reservas filtradas
-            List<ReservaDTO> reservasFiltradas = obtenerReservas();
-
-            // Llamar a la clase PdfGeneratorRestaurante para crear el PDF
+            // Generate the PDF
             PdfGeneratorCliente pdfGeneratorCliente = new PdfGeneratorCliente();
-            boolean exito = pdfGeneratorCliente.generarPDFCliente(fechaInicio, fechaFin, tipoMesa, ubicacion, reservasFiltradas);
+            boolean exito = pdfGeneratorCliente.generarPDFCliente(nombreCliente, telefono, reservasCliente);
 
-            // Mostrar mensaje según el resultado
             if (exito) {
-                mostrarExito("Reporte generado exitosamente.");
+                mostrarExito("Historial del cliente generado exitosamente.");
             } else {
-                mostrarError("Error al generar el reporte.");
+                mostrarError("Error al generar el historial del cliente.");
             }
         } catch (Exception e) {
             mostrarError("Error inesperado: " + e.getMessage());

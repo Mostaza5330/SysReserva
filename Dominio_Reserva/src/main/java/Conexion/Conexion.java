@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Conexion;
 
 import Excepciones.ConexionException;
@@ -10,8 +6,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
- * Clase que incluye un solo metodo para establecer conexion con la base de 
- * datos
+ * Clase responsable de gestionar la conexión con la base de datos utilizando JPA (Java Persistence API).
+ * Proporciona métodos para obtener instancias de `EntityManagerFactory` y `EntityManager`,
+ * y para cerrar la conexión de manera adecuada.
+ * 
+ * Esta clase encapsula la lógica necesaria para configurar y administrar la conexión
+ * con el sistema de persistencia definido en el archivo de configuración de JPA.
  * 
  * @author Sebastian Murrieta Verduzco - 233463
  */
@@ -21,10 +21,12 @@ public class Conexion {
     private static EntityManagerFactory entityManagerFactory;
 
     /**
-     * Método estático para obtener el EntityManagerFactory.
+     * Obtiene la instancia de `EntityManagerFactory`.
+     * Si no existe una instancia previamente creada, se inicializa utilizando
+     * la unidad de persistencia definida en `persistence.xml`.
      * 
-     * @return 
-     * @throws Excepciones.ConexionException En caso de error en la conexion.
+     * @return una instancia de `EntityManagerFactory` activa para gestionar las conexiones con la base de datos.
+     * @throws ConexionException si ocurre algún problema al crear o acceder a la `EntityManagerFactory`.
      */
     public EntityManagerFactory getEntityManagerFactory() 
             throws ConexionException{
@@ -36,19 +38,21 @@ public class Conexion {
     }
 
     /**
-     * Método para obtener el EntityManager
+     * Obtiene una instancia de `EntityManager` para realizar operaciones de persistencia en la base de datos.
+     * Este método utiliza la `EntityManagerFactory` para crear la instancia.
      * 
-     * @return 
-     * @throws Excepciones.ConexionException En caso de error en la conexion.
+     * @return una nueva instancia de `EntityManager` para interactuar con la base de datos.
+     * @throws ConexionException si ocurre un problema al obtener el `EntityManager`.
      */
     public EntityManager getEntityManager() throws ConexionException{
         return getEntityManagerFactory().createEntityManager();
     }
 
     /**
-     * Método para cerrar el EntityManagerFactory.
+     * Cierra la instancia de `EntityManagerFactory` si está abierta, liberando así los recursos asociados.
+     * Este método debe ser invocado al finalizar la aplicación o cuando ya no se necesite la conexión a la base de datos.
      * 
-     * @throws Excepciones.ConexionException En caso de error en la conexion.
+     * @throws ConexionException si ocurre un problema al cerrar el `EntityManagerFactory`.
      */
     public static void closeEntityManagerFactory() throws ConexionException{
         if (entityManagerFactory != null && entityManagerFactory.isOpen()) {

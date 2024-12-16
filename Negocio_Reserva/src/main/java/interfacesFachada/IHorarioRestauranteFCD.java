@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Interfaz para establecer las horas de apertura y cierre de un restaurante.
  *
- * @Autor: Sebastian Murrieta Verduzco - 233463
+ * @author Sebastian Murrieta Verduzco - 233463
  */
 public interface IHorarioRestauranteFCD {
 
@@ -34,7 +34,7 @@ public interface IHorarioRestauranteFCD {
      * entre la hora de apertura y cierre.
      *
      * @param restaurante el DTO del restaurante
-     * @return List<String> con los horarios disponibles en formato "hh:mm a"
+     * @return List de cadenas con los horarios disponibles "hh:mm a"
      * @throws IllegalStateException si no hay horarios establecidos
      */
     List<String> obtenerHorariosDisponibles(RestauranteDTO restaurante) throws IllegalStateException;

@@ -10,197 +10,184 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.properties.TextAlignment;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JFileChooser;
 
 /**
- * La clase {@code PdfGeneratorRestaurante} se encarga de generar un documento PDF que
- * contiene un reporte de reservas basado en filtros proporcionados por el
- * usuario. Utiliza la biblioteca iText para la creación del PDF.
- *
- * Esta clase permite a los usuarios seleccionar una ubicación para guardar el
- * archivo PDF y proporciona una interfaz para filtrar reservas por fecha, tipo
- * de mesa y ubicación.
+ * Clase responsable de generar un PDF con el historial de reservaciones de un
+ * cliente. Incluye información del cliente, una tabla con los detalles de sus
+ * reservaciones y estadísticas generales sobre estas.
  *
  * @author Sebastian Murrieta Verduzco - 233463
  */
 public class PdfGeneratorCliente {
 
-	/**
-	 * Genera un documento PDF desde un formulario con filtros específicos de
-	 * reservas.
-	 *
-	 * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
-	 * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
-	 * @param tipoMesa El tipo de mesa a filtrar.
-	 * @param ubicacion La ubicación a filtrar.
-	 * @param reservas Una lista de objetos {@code ReservaDTO} que contienen la
-	 * información de reservas.
-	 * @return {@code true} si el PDF se generó correctamente, {@code false} si
-	 * hubo un error o si el usuario canceló la operación.
-	 */
-	public boolean generarPDFCliente(String fechaInicio,
-	                                         String fechaFin, String tipoMesa, String ubicacion,
-	                                         List<ReservaDTO> reservas) {
-		// Solicita al usuario la ubicación donde guardar el PDF
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setDialogTitle("Guardar PDF");
-		fileChooser.setSelectedFile(new File("Reporte_"
-				+ System.currentTimeMillis() + ".pdf")); // Nombre por defecto
+    /**
+     * Genera un PDF con el historial de reservaciones de un cliente, incluyendo
+     * información del cliente, detalles de las reservas y estadísticas.
+     *
+     * @param nombreCliente el nombre del cliente
+     * @param telefono el número de teléfono del cliente
+     * @param reservas lista de objetos {@link ReservaDTO} con las reservaciones
+     * del cliente
+     * @return true si el PDF se generó correctamente, false en caso de error o
+     * cancelación
+     */
+    public boolean generarPDFCliente(String nombreCliente, String telefono, List<ReservaDTO> reservas) {
+        // Solicita al usuario la ubicación donde guardar el PDF
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar PDF");
+        fileChooser.setSelectedFile(new File("Historial_Cliente_" + nombreCliente.replace(" ", "_") + ".pdf"));
 
-		// Abre el diálogo de guardado y obtiene la selección del usuario
-		int userSelection = fileChooser.showSaveDialog(null);
+        int userSelection = fileChooser.showSaveDialog(null);
 
-		// Verifica si el usuario seleccionó un archivo para guardar
-		if (userSelection != JFileChooser.APPROVE_OPTION) {
-			System.out.println("Guardado cancelado.");
-			return false; // Indica que el usuario canceló la operación
-		}
+        if (userSelection != JFileChooser.APPROVE_OPTION) {
+            return false;
+        }
 
-		// Se obtiene el archivo seleccionado por el usuario y asegura la
-		// extensión .pdf
-		File archivoDestino = obtenerArchivoPDF(fileChooser.getSelectedFile());
+        File archivoDestino = obtenerArchivoPDF(fileChooser.getSelectedFile());
 
-		try (PdfWriter writer = new PdfWriter(archivoDestino); PdfDocument pdf = new PdfDocument(writer); Document document = new Document(pdf)) {
+        try (PdfWriter writer = new PdfWriter(archivoDestino); PdfDocument pdf = new PdfDocument(writer); Document document = new Document(pdf)) {
 
-			// Agrega título y filtros aplicados al documento
-			agregarTituloYFiltros(document, fechaInicio, fechaFin, tipoMesa,
-					ubicacion);
+            // Agregar información del cliente
+            agregarInformacionCliente(document, nombreCliente, telefono);
 
-			// Calcular el total ganado
-			double totalGanado = calcularTotalGanado(reservas, fechaInicio,
-					fechaFin, tipoMesa, ubicacion);
-			document.add(new Paragraph("Total Ganado: $" + String.format("%.2f",
-					totalGanado)).setFontSize(16));
+            // Crear y agregar la tabla de reservas
+            Table table = crearTablaReservasCliente(reservas);
+            document.add(new Paragraph("Historial de Reservaciones:").setFontSize(16));
+            document.add(table);
 
-			// Crear y agregar la tabla para reservas
-			Table table = crearTablaReservas(reservas, fechaInicio, fechaFin,
-					tipoMesa, ubicacion);
-			document.add(new Paragraph("Reservas:").setFontSize(16));
-			document.add(table);
+            // Agregar estadísticas del cliente
+            agregarEstadisticasCliente(document, reservas);
 
-			return true; // Indica que el PDF se generó correctamente
-		} catch (FileNotFoundException e) {
-			System.err.println("Error al generar el PDF: " + e.getMessage());
-			return false; // Indica que hubo un error al generar el PDF
-		} catch (Exception e) { // Captura cualquier otra excepción
-			System.err.println("Error inesperado: " + e.getMessage());
-			return false; // Indica que hubo un error al generar el PDF
-		}
-	}
+            return true;
+        } catch (FileNotFoundException e) {
+            System.err.println("Error al generar el PDF: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error inesperado: " + e.getMessage());
+            return false;
+        }
+    }
 
-	private File obtenerArchivoPDF(File archivoDestino) {
-		if (!archivoDestino.getName().toLowerCase().endsWith(".pdf")) {
-			archivoDestino = new File(archivoDestino.getAbsolutePath()
-					+ ".pdf");
-		}
-		return archivoDestino;
-	}
+    /**
+     * Verifica y ajusta el nombre del archivo proporcionado para asegurarse de
+     * que tenga la extensión ".pdf".
+     *
+     * @param archivoDestino el archivo proporcionado por el usuario
+     * @return un objeto {@link File} que garantiza la extensión ".pdf"
+     */
+    private File obtenerArchivoPDF(File archivoDestino) {
+        if (!archivoDestino.getName().toLowerCase().endsWith(".pdf")) {
+            archivoDestino = new File(archivoDestino.getAbsolutePath() + ".pdf");
+        }
+        return archivoDestino;
+    }
 
-	private void agregarTituloYFiltros(Document document, String fechaInicio,
-	                                   String fechaFin, String tipoMesa, String ubicacion) {
-		document.add(new Paragraph("Reporte de Reservas").setFontSize(20));
-		document.add(new Paragraph("Filtros aplicados:").setFontSize(16));
-		agregarParrafoSiNoVacio(document, "Fecha de Inicio: ", fechaInicio);
-		agregarParrafoSiNoVacio(document, "Fecha de Fin: ", fechaFin);
-		agregarParrafoSiNoVacio(document, "Tipo de Mesa: ", tipoMesa);
-		agregarParrafoSiNoVacio(document, "Ubicación: ", ubicacion);
-	}
+    /**
+     * Agrega al documento la información del cliente, incluyendo nombre y
+     * teléfono.
+     *
+     * @param document el documento PDF donde se agregará la información
+     * @param nombreCliente el nombre del cliente
+     * @param telefono el número de teléfono del cliente
+     */
+    private void agregarInformacionCliente(Document document, String nombreCliente, String telefono) {
+        document.add(new Paragraph("Historial de Cliente").setFontSize(24).setBold());
+        document.add(new Paragraph("Información del Cliente:").setFontSize(16));
+        document.add(new Paragraph("Nombre: " + nombreCliente).setFontSize(12));
+        document.add(new Paragraph("Teléfono: " + telefono).setFontSize(12));
+        document.add(new Paragraph("\n")); // Espacio en blanco
+    }
 
-	private Table crearTablaReservas(List<ReservaDTO> reservas,
-	                                 String fechaInicio, String fechaFin, String tipoMesa, String ubicacion) {
-		Table table = new Table(5); // Ahora con 6 columnas
-		table.addHeaderCell(createCenteredCell("Cliente"));
-		table.addHeaderCell(createCenteredCell("Fecha"));
-		table.addHeaderCell(createCenteredCell("Número de Personas"));
-		table.addHeaderCell(createCenteredCell("Tipo de Mesa"));
-		table.addHeaderCell(createCenteredCell("Ubicación"));
+    /**
+     * Crea una tabla que contiene los detalles de las reservas del cliente.
+     * Cada fila incluye fecha y hora, tipo de mesa, ubicación y número de
+     * personas.
+     *
+     * @param reservas lista de objetos {@link ReservaDTO} con las reservaciones
+     * del cliente
+     * @return una tabla ({@link Table}) con los datos de las reservas
+     */
+    private Table crearTablaReservasCliente(List<ReservaDTO> reservas) {
+        Table table = new Table(4);
 
-		// Formateador para fechas
-		DateTimeFormatter formatter = DateTimeFormatter.
-				ofPattern("dd/MM/yyyy HH:mm");
+        // Encabezados de la tabla
+        table.addHeaderCell(createHeaderCell("Fecha y Hora"));
+        table.addHeaderCell(createHeaderCell("Mesa"));
+        table.addHeaderCell(createHeaderCell("Ubicación"));
+        table.addHeaderCell(createHeaderCell("Número de Personas"));
 
-		// Agrega las reservas al documento
-		for (ReservaDTO reserva : reservas) {
-			// Filtrar reservas directamente durante la adición al PDF
-			if (filtrarReserva(reserva, fechaInicio, fechaFin, tipoMesa, ubicacion)) {
-				table.addCell(createCenteredCell(reserva.getCliente().getNombre()));
-				table.addCell(createCenteredCell(reserva.getFechaHoraReserva().format(formatter)));
-				table.addCell(createCenteredCell(String.valueOf(reserva.getNumeroPersonas())));
-				table.addCell(createCenteredCell(reserva.getMesa().getTipoMesa()));
-				table.addCell(createCenteredCell(reserva.getMesa().getUbicacion()));
-			}
-		}
-		return table;
-	}
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-	/**
-	 * Método auxiliar para crear una celda centrada en una tabla PDF.
-	 *
-	 * @param content El contenido a incluir en la celda.
-	 * @return Una celda centrada que contiene el contenido proporcionado.
-	 */
-	private Cell createCenteredCell(String content) {
-		Cell cell = new Cell();
-		cell.add(new Paragraph(content));
-		cell.setTextAlignment(TextAlignment.CENTER);
-		return cell;
-	}
+        // Agregar las reservas a la tabla
+        for (ReservaDTO reserva : reservas) {
+            table.addCell(createCenteredCell(reserva.getFechaHoraReserva().format(formatter)));
+            table.addCell(createCenteredCell(reserva.getMesa().getTipoMesa()));
+            table.addCell(createCenteredCell(reserva.getMesa().getUbicacion()));
+            table.addCell(createCenteredCell(String.valueOf(reserva.getNumeroPersonas())));
+        }
 
-	/**
-	 * Método auxiliar para agregar un párrafo al documento PDF si el contenido
-	 * no está vacío.
-	 *
-	 * @param document El documento al que se añadirá el párrafo.
-	 * @param etiqueta La etiqueta que precederá al contenido.
-	 * @param contenido El contenido a agregar al documento.
-	 */
-	private void agregarParrafoSiNoVacio(Document document, String etiqueta,
-	                                     String contenido) {
-		if (contenido != null && !contenido.trim().isEmpty()) {
-			document.add(new Paragraph(etiqueta + contenido));
-		}
-	}
+        return table;
+    }
 
-	/**
-	 * Filtra reservas basadas en los criterios proporcionados.
-	 *
-	 * @param reserva El objeto {@code ReservaDTO} a evaluar.
-	 * @param fechaInicio La fecha de inicio del filtro en formato "dd/MM/yyyy".
-	 * @param fechaFin La fecha de fin del filtro en formato "dd/MM/yyyy".
-	 * @param tipoMesa El tipo de mesa a filtrar.
-	 * @param ubicacion La ubicación a filtrar.
-	 * @return {@code true} si la reserva cumple con todos los criterios,
-	 * {@code false} de lo contrario.
-	 */
-	private boolean filtrarReserva(ReservaDTO reserva, String fechaInicio, String fechaFin, String tipoMesa, String ubicacion) {
-		boolean fechaValida = validarFechas(reserva, fechaInicio, fechaFin);
-		boolean tipoMesaValido = tipoMesa.isEmpty() || reserva.getMesa().getTipoMesa().equalsIgnoreCase(tipoMesa);
-		boolean ubicacionValida = ubicacion.isEmpty() || reserva.getMesa().getUbicacion().equalsIgnoreCase(ubicacion);
+    /**
+     * Agrega estadísticas generales de las reservaciones al documento, como el
+     * total de reservas, el monto total gastado y el promedio de personas por
+     * reserva.
+     *
+     * @param document el documento PDF donde se agregarán las estadísticas
+     * @param reservas lista de objetos {@link ReservaDTO} con las reservaciones
+     * del cliente
+     */
+    private void agregarEstadisticasCliente(Document document, List<ReservaDTO> reservas) {
+        document.add(new Paragraph("\n")); // Espacio en blanco
+        document.add(new Paragraph("Estadísticas del Cliente:").setFontSize(16));
 
-		return fechaValida && tipoMesaValido && ubicacionValida;
-	}
+        // Total de reservas
+        document.add(new Paragraph("Total de reservaciones: " + reservas.size()));
 
-	private boolean validarFechas(ReservaDTO reserva, String fechaInicio, String fechaFin) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDateTime inicio = LocalDate.parse(fechaInicio, formatter).atStartOfDay();
-		LocalDateTime fin = LocalDate.parse(fechaFin, formatter).atTime(23, 59);
-		return !reserva.getFechaHoraReserva().isBefore(inicio) && !reserva.getFechaHoraReserva().isAfter(fin);
-	}
+        // Total gastado
+        double totalGastado = reservas.stream()
+                .mapToDouble(ReservaDTO::getCosto)
+                .sum();
+        document.add(new Paragraph("Total gastado: $" + String.format("%.2f", totalGastado)));
 
-	private double calcularTotalGanado(List<ReservaDTO> reservas,
-	                                   String fechaInicio, String fechaFin, String tipoMesa,
-	                                   String ubicacion) {
-		double totalGanado = 0.0;
+        // Promedio de personas por reserva
+        double promedioPersonas = reservas.stream()
+                .mapToInt(ReservaDTO::getNumeroPersonas)
+                .average()
+                .orElse(0.0);
+        document.add(new Paragraph("Promedio de personas por reserva: "
+                + String.format("%.1f", promedioPersonas)));
+    }
 
-		for (ReservaDTO reserva : reservas) {
-			if (filtrarReserva(reserva, fechaInicio, fechaFin, tipoMesa, ubicacion)) {
-				totalGanado += reserva.getCosto(); // Asegúrate de que este método esté en ReservaDTO
-			}
-		}
-		return totalGanado;
-	}
+    /**
+     * Crea una celda para los encabezados de la tabla con estilo centrado y
+     * negrita.
+     *
+     * @param content el contenido de la celda
+     * @return un objeto {@link Cell} con el estilo de encabezado
+     */
+    private Cell createHeaderCell(String content) {
+        Cell cell = new Cell();
+        cell.add(new Paragraph(content));
+        cell.setTextAlignment(TextAlignment.CENTER);
+        cell.setBold();
+        return cell;
+    }
+
+    /**
+     * Crea una celda con contenido centrado para las filas de la tabla.
+     *
+     * @param content el contenido de la celda
+     * @return un objeto {@link Cell} con el contenido centrado
+     */
+    private Cell createCenteredCell(String content) {
+        Cell cell = new Cell();
+        cell.add(new Paragraph(content));
+        cell.setTextAlignment(TextAlignment.CENTER);
+        return cell;
+    }
 }

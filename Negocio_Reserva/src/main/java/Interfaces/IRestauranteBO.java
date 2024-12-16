@@ -21,14 +21,39 @@ public interface IRestauranteBO {
     /**
      * Consulta y recupera la información del restaurante.
      *
-     * @return El objeto que representa el restaurante consultado.
-     * @throws Excepciones.BOException En caso de error uno nunca sabe.
+     * @return El objeto RestauranteDTO que representa la información del
+     * restaurante.
+     * @throws BOException En caso de error al consultar el restaurante.
      */
     public RestauranteDTO consultar() throws BOException;
 
+    /**
+     * Cambia el horario de apertura y cierre del restaurante.
+     *
+     * @param horaApertura La nueva hora de apertura del restaurante.
+     * @param horaCierre La nueva hora de cierre del restaurante.
+     * @throws BOException En caso de error al cambiar el horario del
+     * restaurante.
+     */
     void cambiarHoraRestaurante(LocalTime horaApertura, LocalTime horaCierre) throws BOException;
 
+    /**
+     * Verifica si el restaurante está abierto en el momento dado.
+     *
+     * @param hora La hora a verificar.
+     * @return true si el restaurante está abierto, false en caso contrario.
+     * @throws BOException En caso de error al verificar el estado del
+     * restaurante.
+     */
     boolean estaAbierto(LocalTime hora) throws BOException;
 
+    /**
+     * Calcula el tiempo restante hasta el cierre del restaurante.
+     *
+     * @param horaActual La hora actual.
+     * @return El tiempo en minutos hasta el cierre del restaurante.
+     * @throws BOException En caso de error al calcular el tiempo hasta el
+     * cierre.
+     */
     long tiempoHastaCierre(LocalTime horaActual) throws BOException;
 }

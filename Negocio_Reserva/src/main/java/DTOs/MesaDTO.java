@@ -9,7 +9,7 @@ package DTOs;
  * transferir los datos de una mesa entre la capa de presentación y la capa 
  * de negocio sin exponer la entidad de la base de datos directamente.
  * 
- * @author skevi
+ * @author Sebastian Murrieta Verduzco - 233463
  */
 public class MesaDTO {
 
